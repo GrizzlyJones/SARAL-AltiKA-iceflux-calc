@@ -1,3 +1,8 @@
-# Compiled source #
+# Large data file #
 ###################
 *.nc
+*.text
+*.txt
+*.mat
+ALTIKA/
+velocity/

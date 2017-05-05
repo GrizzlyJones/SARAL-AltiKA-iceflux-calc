@@ -1,5 +1,7 @@
 %% Init
-clc; close all; clear;
+clc;
+close all;
+clear;
 
 %% File mangagement
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps

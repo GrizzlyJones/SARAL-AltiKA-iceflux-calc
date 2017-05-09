@@ -46,7 +46,7 @@ for cycle = 32
     cycleName = sprintf('cycle_%03d', cycle);
     cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
     
-    if exist(cycleFile, 'file') ~= 0;
+    if exist(cycleFile, 'file') == 0;
         disp('No file found, creating new.');
         % All data files
         cycleFilePath = fullfile(altikaFiles, cycleName);
@@ -162,10 +162,11 @@ C_rtrk_ocog = zeros(N, 1);
 C_rtrk_pp_cog = zeros(N, 1);
 mp = zeros(N,1);
 pP = zeros(N,1);
+W = zeros(N,1);
 
 for i = 1:N
     C_rtrk_ocog(i) = waveformAnalysis(wave(:,i), 'OCOG');
-    C_rtrk_pp_cog(i) = waveformAnalysis(wave(:,i), 'PP_COG');
+    [C_rtrk_pp_cog(i), ~, ~, ~, W(i)] = waveformAnalysis(wave(:,i), 'PP_COG');
     mp(i) = maxPower(wave(:,i), agc(i));
     pP(i) = pulsePeakness(wave(:,i), 128);
 end
@@ -200,10 +201,11 @@ sla_pp_cog_q = griddata(lon, lat, sla_pp_cog, Xq, Yq);
 ssha_q = griddata(lon, lat, ssha, Xq, Yq);
 pPq = griddata(lon, lat, pP, Xq, Yq);
 mPq = griddata(lon, lat, mp, Xq, Yq);
+Wq = griddata(lon, lat, W, Xq, Yq);
 
 % Classification
 pP_class = zeros(size(Xq));
-pP_class(pPq >= 30) = 4;
+pP_class(pPq >= 30 & Wq < 2) = 4;
 
 mP_class = zeros(size(Xq));
 mP_class(mPq >= 70) = 4;
@@ -230,7 +232,7 @@ m_gshhs('lc', 'color', 'k');
 colorbar;
 m_grid;
 
-% Pulse Peakniss and Max Power
+%% Pulse Peakniss and Max Power
 figure;
 subplot(2,1,1);
 title('Pulse Peakniss');
@@ -243,12 +245,12 @@ m_grid;
 subplot(2,1,2);
 title('Max Power');
 hold on
-m_pcolor(Xq, Yq, pP_class);
+m_pcolor(Xq, Yq, mP_class);
 shading flat;
 m_gshhs('lc', 'color', 'k');
 m_grid;
 
-% Product given SLA
+%% Product given SLA
 figure;
 title('Product SLA');
 hold on
@@ -264,6 +266,7 @@ lonx = linspace(-8.2, 8.9, steps);
 latx = linspace(81.4, 80, steps);
 fluxgate_sla_pp_cog = interp2(Xq, Yq, sla_pp_cog_q, lonx, latx);
 fluxgate_pP = interp2(Xq, Yq, pPq, lonx, latx);
+fluxgate_W = interp2(Xq, Yq, Wq, lonx, latx);
 
 figure;
 hold on
@@ -283,7 +286,7 @@ title('From linear interpolation');
 subplot(2,2,4);
 hold on
 fluxgate_leads = zeros(steps,1);
-fluxgate_leads(fluxgate_pP > 30) = 4;
+fluxgate_leads(fluxgate_pP > 30 & fluxgate_W < 2) = 4;
 plot(fluxgate_sla_pp_cog);
 plot(fluxgate_leads/4, 'r');
 title('From cubic interpolation');

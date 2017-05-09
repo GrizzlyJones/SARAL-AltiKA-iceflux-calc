@@ -217,7 +217,7 @@ plot((sla_pp_cog - ssha));
 title('Difference');
 
 %% Waveforms OCOG
-i = 260;
+i = 1110;
 figure;
 subplot(2,1,1);
 hold on;

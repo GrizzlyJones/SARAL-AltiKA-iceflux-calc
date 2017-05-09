@@ -220,7 +220,6 @@ hold on
 title('Retracked SLA');
 m_pcolor(Xq, Yq, sla_pp_cog_q);
 shading flat;
-m_gshhs('lc', 'color', 'k');
 colorbar;
 m_grid;
 
@@ -228,7 +227,6 @@ m_grid;
 figure;
 title('Retracked, scatter');
 m_scatter(lon, lat, 10, sla_pp_cog, 'filled');
-m_gshhs('lc', 'color', 'k');
 colorbar;
 m_grid;
 
@@ -239,7 +237,6 @@ title('Pulse Peakniss');
 hold on
 m_pcolor(Xq, Yq, pP_class);
 shading flat;
-m_gshhs('lc', 'color', 'k');
 m_grid;
 
 subplot(2,1,2);
@@ -247,7 +244,6 @@ title('Max Power');
 hold on
 m_pcolor(Xq, Yq, mP_class);
 shading flat;
-m_gshhs('lc', 'color', 'k');
 m_grid;
 
 %% Product given SLA
@@ -256,7 +252,6 @@ title('Product SLA');
 hold on
 m_pcolor(Xq, Yq, ssha_q);
 shading flat;
-m_gshhs('lc', 'color', 'k');
 colorbar;
 m_grid;
 
@@ -273,7 +268,6 @@ hold on
 subplot(1,2,1);
 m_pcolor(Xq, Yq, ssha_q);
 shading flat;
-m_gshhs('lc', 'color', 'k');
 colorbar;
 m_grid;
 m_track(lonx,latx);

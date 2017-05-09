@@ -8,7 +8,8 @@ altikaFiles = fullfile(pwd,'ALTIKA');                        % data
 
 %% Fram Strait
 LON = [-10, 10];
-LAT = [76, 82];
+% LAT = [76, 82];
+LAT = [79, 82];
 
 % Settings for map projection
 m_proj('albers equal-area', 'long', LON, 'lat', LAT, 'rectbox', 'off');
@@ -66,7 +67,7 @@ filLat = (LAT(1) - 1) < tmpLat & tmpLat < (LAT(2) + 1);
 filter = filLat & filLon;
 
 % Skips iteration if no useful data is detected
-if ~(any(any(filter)))
+if ~(any(filter(:))) || sum(filter(:)) < 5
     fprintf('%d skipped, no data\n', j);
     return;
 end
@@ -141,6 +142,10 @@ B_spc = 0.31;
 % Init calculated variables
 C_rtrk_ocog = zeros(N, 1, n);
 C_rtrk_pp_cog = zeros(N, 1, n);
+M_ocog = zeros(N, 1, n);
+W_ocog = zeros(N, 1, n);
+M_pp_cog = zeros(N, 1, n);
+W_pp_cog = zeros(N, 1, n);
 mp = zeros(N, 1, n);
 pP = zeros(N, 1, n);
 wPower = zeros(128, N);
@@ -149,8 +154,8 @@ pStart = zeros(N, 1, n);
 pStop = zeros(N, 1, n);
 for i = 1:n
     for j = 1:N
-        C_rtrk_ocog(j,1,i) = waveformAnalysis(wave(:,j,i), 'OCOG');
-        [C_rtrk_pp_cog(j,1,i), pStart(j,1,i), pStop(j,1,i)] = waveformAnalysis(wave(:,j,i), 'PP_COG');
+        [C_rtrk_ocog(j,1,i), ~,~, M_ocog(j,1,i), W_ocog(j,1,i)] = waveformAnalysis(wave(:,j,i), 'OCOG');
+        [C_rtrk_pp_cog(j,1,i), pStart(j,1,i), pStop(j,1,i), M_pp_cog(j,1,i), W_pp_cog(j,1,i)] = waveformAnalysis(wave(:,j,i), 'PP_COG');
         mp(j,1,i) = maxPower(wave(:,j,i), agc(j,1,i));
         pP(j,1,i) = pulsePeakness(wave(:,j,i), 128);
         wPower(:,j) = wavePower(wave(:,j,i), agc(j,1,i));
@@ -212,22 +217,25 @@ plot((sla_pp_cog - ssha));
 title('Difference');
 
 %% Waveforms OCOG
+i = 260;
 figure;
 subplot(2,1,1);
 hold on;
-plot(wave(:,1));
-line([C_rtrk_ocog(1), C_rtrk_ocog(1)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');
+plot(wave(:,i));
+line([C_rtrk_ocog(i), C_rtrk_ocog(i)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');
 line([C_ntp, C_ntp], get(gca,'ylim'), 'color', 'g', 'linestyle', '--');
+rectangle('position', [C_rtrk_ocog(i) 0 W_ocog(i) M_ocog(i)]);
 title('OCOG');
 legend('wave', 'retracked point', 'reference bin')
 
 % Waveforms PPCOG
 subplot(2,1,2);
 hold on;
-plot(wave(:,1));
-plot(pStart:pStop, wave(pStart:pStop,1), 'color', 'r');
-line([C_rtrk_pp_cog(1), C_rtrk_pp_cog(1)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');
+plot(wave(:,i));
+plot(pStart(i):pStop(i), wave(pStart(i):pStop(i),i), 'color', 'r');
+line([C_rtrk_pp_cog(i), C_rtrk_pp_cog(i)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');
 line([C_ntp, C_ntp], get(gca,'ylim'), 'color', 'g', 'linestyle', '--');
+rectangle('position', [C_rtrk_pp_cog(i) 0 W_pp_cog(i) M_pp_cog(i)]);
 title('PP COG (Threshold retracker)');
 legend('wave', 'primary peak', 'retracked point', 'reference bin')
 
@@ -246,7 +254,7 @@ figure;
 xq = 1:N;
 hold on;
 plot(sla_pp_cog);
-plot(xq(mp >= 70), sla_pp_cog(mp >= 70), 'r.');
+plot(xq(pP >= 30), sla_pp_cog(pP >= 30), 'r.');
 xlim([0 N]);
 
 %%
@@ -259,8 +267,8 @@ m_grid;
 %%
 if strcmp(input('Make movie (y/n)\n', 's'), 'y')
 fig = figure('units', 'pixels', 'position', [400 100 1024 768]);
-f = struct('cdata', cell(1, N), 'colormap', cell(1, N));
-for i = 1:N
+f = struct('cdata', cell(1, 100), 'colormap', cell(1, 100));
+for i = 260:360
     subplot(2,1,1);
     plot(wave(:,i));
     line([C_rtrk_ocog(i), C_rtrk_ocog(i)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');

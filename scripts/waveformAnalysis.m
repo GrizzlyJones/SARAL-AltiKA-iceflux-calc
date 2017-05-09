@@ -1,4 +1,4 @@
-function [C_rtrk, pp_start, pp_stop] = waveformAnalysis(waveform, type)
+function [C_rtrk, pp_start, pp_stop, M, W] = waveformAnalysis(waveform, type)
 %WAVEFORMANALYSIS Calculate retracked point
 %   C_rtrk = waveformAnalysis(WAVEFORM, TYPE) returns retracked bin using
 %   either Offset Center of Gravity (OCOG) or Primary Peak Center of
@@ -13,11 +13,13 @@ end
 
 if strcmp(type, 'OCOG')
     % Offset Center of Gravity
-    C_rtrk = OCOG(waveform);
+    [C_rtrk, M, W] = OCOG(waveform);
+    pp_start = nan;
+    pp_stop = nan;
 elseif strcmp(type, 'PP_COG')
     % Primary peak analysis
     [pp_start, pp_stop] = primaryPeak(waveform);
-    C_rtrk = OCOG(waveform(:), pp_start, pp_stop);
+    [C_rtrk, M, W] = OCOG(waveform(:), pp_start, pp_stop);
 else
     % Mid power retracker
     refSign = 0.5;

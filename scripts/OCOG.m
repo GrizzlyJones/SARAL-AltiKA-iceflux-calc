@@ -1,4 +1,4 @@
-function C_rtrk = OCOG(waveform, n1, n2)
+function [C_rtrk, M, W] = OCOG(waveform, n1, n2)
 %OCOG Retrack waveform using Offset Center Of Gravity.
 %   C_rtrk = OCOG(WAVEFORM) returns the retracked bin number of
 %   the given waveform.

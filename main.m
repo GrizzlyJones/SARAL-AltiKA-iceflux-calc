@@ -1,7 +1,5 @@
 %% Init
-clc;
-close all;
-clear;
+clc; close all; clear;
 
 %% File mangagement
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
@@ -10,7 +8,8 @@ altikaFiles = fullfile(pwd,'ALTIKA');                        % data
 
 %% Fram Strait
 LON = [-10, 10];
-LAT = [76, 82];
+% LAT = [76, 82];
+LAT = [79, 82];
 
 % Settings for map projection
 m_proj('albers equal-area', 'long', LON, 'lat', LAT, 'rectbox', 'off');
@@ -47,12 +46,13 @@ for cycle = 32
     cycleName = sprintf('cycle_%03d', cycle);
     cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
     
-    if exist(cycleFile, 'file') == 0;
+    if exist(cycleFile, 'file') ~= 0;
         disp('No file found, creating new.');
         % All data files
         cycleFilePath = fullfile(altikaFiles, cycleName);
         lis = dir(cycleFilePath);
         lis(1:2) = [];
+        %         for j = 1:length(lis)
         for j = 1:length(lis)
             % Extraction of the filepath
             filePath = fullfile(cycleFilePath, lis(j).name);
@@ -68,8 +68,8 @@ for cycle = 32
             filter = filLat & filLon;
             
             % Skips iteration if no useful data is detected
-            if ~(any(any(filter)))
-                %                 fprintf('%d skipped\n', j);
+            if ~(any(filter(:))) || sum(filter(:)) < 5
+                % fprintf('%d skipped\n', j);
                 continue;
             end
             
@@ -98,6 +98,7 @@ for cycle = 32
             tmpInvBarCorr = ncread(filePath, 'inv_bar_corr');
             tmpHF = ncread(filePath, 'hf_fluctuations_corr');
             
+            tmpN = length(tmpLon(filter));
             x = linspace(1,length(tmpHF(filter(1,:))), tmpN);
             
             % Filtration of found data, saving for later use
@@ -109,7 +110,7 @@ for cycle = 32
             alt = vertcat(alt, tmpAlt(filter));
             
             modeled_instr_corr = vertcat(modeled_instr_corr, interp1(tmpModeled_intr_corr(filter(1, :)), x)');
-            doppler_corr = vertcat(doppler_corr, interp1(tmpDoppler_corr(filter(1,:)), x)');
+            doppler_corr = vertcat(doppler_corr, interp1(tmpDoppler_corr(filter(1, :)), x)');
             
             model_dry_tropo_corr = vertcat(model_dry_tropo_corr, interp1(tmpModel_dry_tropo_corr(filter(1, :)), x)');
             rad_wet_tropo_corr = vertcat(rad_wet_tropo_corr, interp1(tmpRad_wet_tropo_corr(filter(1, :)), x)');
@@ -129,9 +130,8 @@ for cycle = 32
             
             % Remove tmp variables from workspace
             clear -regexp ^tmp
-            
-            
-            %             disp(j)
+                        
+            % disp(j)
         end
         
         % Save variables
@@ -202,11 +202,11 @@ pPq = griddata(lon, lat, pP, Xq, Yq);
 mPq = griddata(lon, lat, mp, Xq, Yq);
 
 % Classification
-% pP_class = zeros(size(Vq));
-% pP_class(Vq >= 30) = 4;
-% 
-% mP_class = zeros(size(Vq));
-% mP_class(Vq >= 30) = 4;
+pP_class = zeros(size(Xq));
+pP_class(pPq >= 30) = 4;
+
+mP_class = zeros(size(Xq));
+mP_class(mPq >= 70) = 4;
 
 %% Mask
 mask = ~isnan(ssha_q);
@@ -216,7 +216,7 @@ mask = ~isnan(ssha_q);
 figure;
 hold on
 title('Retracked SLA');
-m_pcolor(Xq, Yq, sla_pp_cog_q(mask));
+m_pcolor(Xq, Yq, sla_pp_cog_q);
 shading flat;
 m_gshhs('lc', 'color', 'k');
 colorbar;
@@ -257,3 +257,33 @@ shading flat;
 m_gshhs('lc', 'color', 'k');
 colorbar;
 m_grid;
+
+%% Track grid vs interp
+steps = 1000;
+lonx = linspace(-8.2, 8.9, steps);
+latx = linspace(81.4, 80, steps);
+fluxgate_sla_pp_cog = interp2(Xq, Yq, sla_pp_cog_q, lonx, latx);
+fluxgate_pP = interp2(Xq, Yq, pPq, lonx, latx);
+
+figure;
+hold on
+subplot(1,2,1);
+m_pcolor(Xq, Yq, ssha_q);
+shading flat;
+m_gshhs('lc', 'color', 'k');
+colorbar;
+m_grid;
+m_track(lonx,latx);
+title('Retracked SLA');
+
+subplot(2,2,2);
+plot(fluxgate_sla_pp_cog);
+title('From linear interpolation');
+
+subplot(2,2,4);
+hold on
+fluxgate_leads = zeros(steps,1);
+fluxgate_leads(fluxgate_pP > 30) = 4;
+plot(fluxgate_sla_pp_cog);
+plot(fluxgate_leads/4, 'r');
+title('From cubic interpolation');

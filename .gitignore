@@ -4,5 +4,6 @@
 *.text
 *.txt
 *.mat
+*.asv
 ALTIKA/
 velocity/

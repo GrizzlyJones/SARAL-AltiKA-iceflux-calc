@@ -116,12 +116,7 @@ for cycle = 32
         end
         
         % Save variables
-        save(cycleFile, 'lon', 'lat', 'wave', 'agc', ...
-            'tracker', 'alt', 'modeled_instr_corr', 'doppler_corr', ...
-            'model_dry_tropo_corr', 'rad_wet_tropo_corr', ...
-            'iono_corr_gim', 'sea_state_bias', 'range', 'mss', 'ssha',...
-            'solidEarthTideHeight', 'oceanTide', 'poleTide', ...
-            'invBarCorr', 'HF');
+        save(cycleFile, 'data');
     else
         % Load variables
         fprintf('Existing file %s has been loaded\n', cycleFile);
@@ -177,29 +172,33 @@ sla_ocog = ssh_ocog - sla_corr;
 sla_pp_cog = ssh_pp_cog - sla_corr;
 
 %% Grid iterpolation
-[Xq, Yq] = meshgrid(LON(1):0.01:LON(2), LAT(1):0.001:LAT(2));
-sla_pp_cog_q = griddata(lon, lat, sla_pp_cog, Xq, Yq);
-ssha_q = griddata(lon, lat, ssha, Xq, Yq);
-pPq = griddata(lon, lat, pP, Xq, Yq);
-mPq = griddata(lon, lat, mp, Xq, Yq);
-Wq = griddata(lon, lat, W, Xq, Yq);
+gridData = struct('Xq', [], 'Yq', [], 'sla', [], 'ssha', [], ...
+                  'pP', [], 'mP', [], 'W', []);
+gridData.sla = struct('ocog', [], 'pp_cog', []);
+
+[gridData.Xq, gridData.Yq] = meshgrid(LON(1):0.01:LON(2), LAT(1):0.001:LAT(2));
+gridData.sla.pp_cog = griddata(lon, lat, sla_pp_cog, Xq, Yq);
+gridData.ssha = griddata(lon, lat, ssha, Xq, Yq);
+gridData.pP = griddata(lon, lat, pP, Xq, Yq);
+gridData.mP = griddata(lon, lat, mp, Xq, Yq);
+gridData.W = griddata(lon, lat, W, Xq, Yq);
 
 % Classification
 pP_class = zeros(size(Xq));
-pP_class(pPq >= 30 & Wq < 2) = 4;
+pP_class(gridData.pP >= 30 & gridData.W < 2) = 4;
 
 mP_class = zeros(size(Xq));
-mP_class(mPq >= 70) = 4;
+mP_class(gridData.mP >= 70) = 4;
 
 %% Mask
-mask = ~isnan(ssha_q);
+mask = ~isnan(gridData.ssha);
 
 %% Plot
 % Primary Peak COG Map
 figure;
 hold on
 title('Retracked SLA');
-m_pcolor(Xq, Yq, sla_pp_cog_q);
+m_pcolor(Xq, Yq, gridData.sla.pp_cog);
 shading flat;
 colorbar;
 m_grid;
@@ -231,7 +230,7 @@ m_grid;
 figure;
 title('Product SLA');
 hold on
-m_pcolor(Xq, Yq, ssha_q);
+m_pcolor(Xq, Yq, gridData.ssha);
 shading flat;
 colorbar;
 m_grid;
@@ -240,14 +239,14 @@ m_grid;
 steps = 1000;
 lonx = linspace(-8.2, 8.9, steps);
 latx = linspace(81.4, 80, steps);
-fluxgate_sla_pp_cog = interp2(Xq, Yq, sla_pp_cog_q, lonx, latx);
-fluxgate_pP = interp2(Xq, Yq, pPq, lonx, latx);
-fluxgate_W = interp2(Xq, Yq, Wq, lonx, latx);
+fluxgate_sla_pp_cog = interp2(Xq, Yq, gridData.sla.pp_cog, lonx, latx);
+fluxgate_pP = interp2(Xq, Yq, gridData.pP, lonx, latx);
+fluxgate_W = interp2(Xq, Yq, gridData.W, lonx, latx);
 
 figure;
 hold on
 subplot(1,2,1);
-m_pcolor(Xq, Yq, ssha_q);
+m_pcolor(Xq, Yq, gridData.ssha);
 shading flat;
 colorbar;
 m_grid;

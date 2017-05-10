@@ -18,31 +18,12 @@ m_proj('albers equal-area', 'long', LON, 'lat', LAT, 'rectbox', 'off');
 fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000);
 
 % Init. data arrays
-lon = [];
-lat = [];
-wave = [];
-agc = [];
-tracker = [];
-alt = [];
-
-modeled_instr_corr = [];
-doppler_corr = [];
-
-model_dry_tropo_corr = [];
-rad_wet_tropo_corr = [];
-iono_corr_gim = [];
-sea_state_bias = [];
-
-range = [];
-
-mss = [];
-ssha = [];
-
-solidEarthTideHeight = [];
-oceanTide = [];
-poleTide = [];
-invBarCorr = [];
-HF = [];
+data = struct('lon', [], 'lat', [], ...
+    'wave', [], 'agc', [], 'tracker', [], 'alt', [], ...
+    'modeled_instr_corr', [], 'doppler_corr', [], ...
+    'model_dry_tropo_corr', [], 'rad_wet_tropo_corr', [], 'iono_corr_gim', [], 'sea_state_bias', [], ...
+    'range', [], 'mss', [], 'ssha', [], ...
+    'solidEarthTideHeight', [], 'oceanTide', [], 'poleTide', [], 'invBarCorr', [], 'HF', []);
 
 %% Load data
 for cycle = 32

@@ -15,38 +15,19 @@ LAT = [79, 82];
 m_proj('albers equal-area', 'long', LON, 'lat', LAT, 'rectbox', 'off');
 
 % Init. data arrays
-lon = [];
-lat = [];
-wave = [];
-agc = [];
-tracker = [];
-alt = [];
-
-modeled_instr_corr = [];
-doppler_corr = [];
-
-model_dry_tropo_corr = [];
-rad_wet_tropo_corr = [];
-iono_corr_gim = [];
-sea_state_bias = [];
-
-range = [];
-
-mss = [];
-ssha = [];
-
-solidEarthTideHeight = [];
-oceanTide = [];
-poleTide = [];
-invBarCorr = [];
-HF = [];
+data = struct('lon', [], 'lat', [], ...
+    'wave', [], 'agc', [], 'tracker', [], 'alt', [], ...
+    'modeled_instr_corr', [], 'doppler_corr', [], ...
+    'model_dry_tropo_corr', [], 'rad_wet_tropo_corr', [], 'iono_corr_gim', [], 'sea_state_bias', [], ...
+    'range', [], 'mss', [], 'ssha', [], ...
+    'solidEarthTideHeight', [], 'oceanTide', [], 'poleTide', [], 'invBarCorr', [], 'HF', []);
 
 %% Load data
 for cycle = 32
     cycleName = sprintf('cycle_%03d', cycle);
     cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
     
-    if exist(cycleFile, 'file') == 0;
+    if exist(cycleFile, 'file') == 0
         disp('No file found, creating new.');
         % All data files
         cycleFilePath = fullfile(altikaFiles, cycleName);

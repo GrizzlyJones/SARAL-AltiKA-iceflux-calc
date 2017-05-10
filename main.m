@@ -256,20 +256,8 @@ colorbar;
 m_grid;
 
 %% Track grid vs interp
-fluxgate = struct('lon', [], 'lat', [], 'steps', [], ...
-                  'sla', [], 'ssha', [], 'pP', [], 'W', [], 'class', []);
-fluxgate.steps = 1000;
-fluxgate.lon = linspace(-8.2, 8.9, steps);
-fluxgate.lat = linspace(81.4, 80, steps);
-    
-fluxgate.sla = interp2(Xq, Yq, sla_pp_cog_q, fluxgate.lon, fluxgate.lat);
-fluxgate.pP = interp2(Xq, Yq, pPq, fluxgate.lon, fluxgate.lat);
-fluxgate.W = interp2(Xq, Yq, Wq, fluxgate.lon, fluxgate.lat);
-fluxgate.ssha = interp2(Xq, Yq, ssha_q, fluxgate.lon, fluxgate.lat);
-
-fluxgate.sla(~isnan(fluxgate.ssha)) = nan;
-fluxgate.class = zeros(steps,1);
-fluxgate.class(fluxgate.pP > 30 & fluxgate.W < 2) = 4;
+fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000, ...
+                        Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq);
 
 freeboard = freeboardAnalysis(fluxgate);
 

@@ -12,10 +12,11 @@ R = 6.371e6;
 phi1 = deg2rad(lat1);
 phi2 = deg2rad(lat2);
 
-deltaPhi = deg2rad(lat2 - lat1);
-deltaLambda = deg2rad(lon2 - lon1);
+DeltaPhi = deg2rad(lat2 - lat1);
+DeltaLambda = deg2rad(lon2 - lon1);
 
-a = sin(deltaPhi/2) .* sin(deltaPhi/2) + cos(phi1) .* cos(phi2) .* sin(deltaLambda/2) .* sin(deltaPhi/2);
+a = sin(DeltaPhi/2) .* sin(DeltaPhi/2) + ...
+    cos(phi1) .* cos(phi2) .* sin(DeltaLambda/2) .* sin(DeltaPhi/2);
 c = 2 * atan2(sqrt(a), sqrt(1-a));
 
 dist = R * c;

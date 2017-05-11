@@ -11,8 +11,8 @@ phi2 = deg2rad(lat2);
 
 DeltaLambda = deg2rad(lon2 - lon1);
 
-y = sin(DeltaLambda) * cos(phi2);
-x = cos(phi1) * sin(phi2) - sin(pihi1) * cos(phi2) * cos(DeltaLambda);
+y = sin(DeltaLambda) .* cos(phi2);
+x = cos(phi1) .* sin(phi2) - sin(phi1) .* cos(phi2) .* cos(DeltaLambda);
 
 brng = rad2deg(atan2(y, x));
 

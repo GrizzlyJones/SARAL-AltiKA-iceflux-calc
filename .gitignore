@@ -1,5 +1,6 @@
 # Large data file #
 ###################
+*.vector
 *.nc
 *.text
 *.txt

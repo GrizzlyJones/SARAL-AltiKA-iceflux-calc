@@ -10,8 +10,11 @@ function iceSheets = freeboardAnalysis(fluxgate)
 %
 %   See also INITFLUXGATE
 
+profile = fluxgate.profile;
+data = fluxgate.data;
+
 %% Argument checking
-if length(fluxgate.sla) ~= length(fluxgate.class)
+if length(data.sla) ~= length(data.class)
     error('Error:\nDimensions don\'' match');
 end
 
@@ -28,9 +31,9 @@ index = 1;
 indexStop = nan;
 
 %% Lead and ice sheet detection
-for i = 1:length(fluxgate.sla)
+for i = 1:length(data.sla)
     % if value is a lead and it's a new ice sheet
-    if fluxgate.class(i) == 4 && ~newFreeboard
+    if data.class(i) == 4 && ~newFreeboard
         tmpStop = indexStop;
         indexStop = i - 1;
         newFreeboard = true;
@@ -38,19 +41,19 @@ for i = 1:length(fluxgate.sla)
         % skips the first lead, due to lack of starting lead
         if ~initial
             % filter, see header for more info
-            if any(isnan(fluxgate.sla(indexStart:indexStop))) || ...
+            if any(isnan(data.sla(indexStart:indexStop))) || ...
                     ((indexStop - indexStart) < 3)
                 continue;
             end
             
             % ice sheet extractin
-            iceSheets(index).lon = fluxgate.lon(indexStart:indexStop);
-            iceSheets(index).lat = fluxgate.lat(indexStart:indexStop);
+            iceSheets(index).lon = profile.lon(indexStart:indexStop);
+            iceSheets(index).lat = profile.lat(indexStart:indexStop);
             iceSheets(index).index.start = indexStart;
             iceSheets(index).index.stop = indexStop;
             
-            tmp(index).heights = fluxgate.sla(indexStart:indexStop);
-            tmp(index).leads = fluxgate.sla(tmpStop:indexStart);
+            tmp(index).heights = data.sla(indexStart:indexStop);
+            tmp(index).leads = data.sla(tmpStop:indexStart);
             
             index = index + 1;
         end
@@ -62,7 +65,7 @@ for i = 1:length(fluxgate.sla)
     end
 end
 % Includes last leads data
-tmp(index).leads = fluxgate.sla(tmpStop:indexStart);
+tmp(index).leads = data.sla(tmpStop:indexStart);
 
 %% Freeboard calculations
 for i = 1:length(iceSheets)
@@ -70,3 +73,4 @@ for i = 1:length(iceSheets)
     iceSheets(i).freeboard = tmp(i).heights - avgLead;
 end
 end
+

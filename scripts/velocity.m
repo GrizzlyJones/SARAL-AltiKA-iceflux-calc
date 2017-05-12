@@ -1,6 +1,12 @@
 function [ velocities ] = velocity( fileName, LON, LAT )
-%VELOCITY extracts velocities from desired file
-%   
+%VELOCITY Extracts velocities from desired file
+%   velocities = velocity(FILENAME, LON, LAT) extracts and parses
+%   velocities from FILENAME and filters data within LON and LAT. LON and
+%   LAT are arrays with start and stop value for area of interest.
+% 
+%   Example:
+%       velocities = velocity('20160303.n.S1Adrift.vector', [-10, 10], [79,
+%       82]);
 %
 %   See also GRIDVELOCITIES
 

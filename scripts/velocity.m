@@ -1,35 +1,51 @@
-function [t] = velocity(fileName)
-% Indhentning af hastighederne fra www.seaice.dk/N/YYYY/MM/DD/
+function [ velocities ] = velocity( fileName, LON, LAT )
+%VELOCITY extracts velocities from desired file
+%   
+%
+%   See also GRIDVELOCITIES
 
-t = struct('lon', [], 'lat', [], 'x', [], 'y', [], 'magn', [], 'brng' ,[] , 'xy', [], 'XY', []);
+%% Init. velocity struct
+velocities = struct('lon', [], 'lat', [], 'x', [], 'y', [], 'magn', [], 'brng' ,[]);
 
+%% Open file
 fileID = fopen(fileName);
-M = textscan(fileID, '%f %f %f %f %s', 'Headerlines', 1);
+inputCell = textscan(fileID, '%f %f %f %f %s', 'Headerlines', 1);
 fclose(fileID);
 
-A = cell2mat(M(1:4));
-skip = isnan(A(:,4));
-start = A(skip,3);
+%% Make data useable
+input = cell2mat(inputCell(1:4));
 
-lon = A(skip,2);
-lat = A(skip,1);
+%% Extract data
+skip = isnan(input(:,4));           % Skip human-readable line
+start = input(skip,3) == 1;         % Start positions
+stop = input(skip,3) == 3;          % Stop position
 
-t.lon = lon(start == 3);
-t.lat = lat(start == 3);
+lon = input(skip,2);
+filLon = (LON(1) - 1) < lon & lon < (LON(2) + 1) & stop;
+lat = input(skip,1);
+filLat = (LAT(1) - 1) < lat & lat < (LAT(2) + 1) & stop;
 
-t.x = coor2dist(lon(start == 1), lat(start == 3), lon(start == 3), lat(start == 3));
-t.y = coor2dist(lon(start == 1), lat(start == 1), lon(start == 1), lat(start == 3)); 
+%% Filter for earth
+filter = filLat & filLon;
+filter = filter | circshift(filter, -1);
 
-t.xy = sqrt(t.x.^2 + t.y.^2);
-t.XY = coor2dist(lon(start == 1), lat(start == 1), lon(start == 3), lat(start == 3)); 
+% Remove irrelevant data
+lon(~filter) = [];
+lat(~filter) = [];
+start(~filter) = [];
+stop(~filter) = [];
 
+%% Populate velocities
+velocities.lon = lon(stop);
+velocities.lat = lat(stop);
 
-t.brng = coor2brng(lon(start == 1), lat(start == 1), lon(start == 3), lat(start == 3));
+velocities.x = coor2dist(lon(start), lat(start), lon(stop), lat(start));
+velocities.y = coor2dist(lon(stop), lat(start), lon(stop), lat(stop));
 
-t.magn = coor2dist(lon(start == 1), lat(start == 1), lon(start == 3), lat(start == 3));
+% Assign direction 
+velocities.x(lon(start) > lon(stop)) = velocities.x(lon(start) > lon(stop)) * -1;
+velocities.y(lat(start) > lat(stop)) = velocities.y(lat(start) > lat(stop)) * -1;
 
-% B = cell2mat(M(4)); 
-% C = celldisp(M(5));
-
-end 
-
+velocities.brng = coor2brng(lon(start), lat(start), lon(stop), lat(stop));
+velocities.magn = coor2dist(lon(start), lat(start), lon(stop), lat(stop));
+end

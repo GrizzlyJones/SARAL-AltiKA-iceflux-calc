@@ -3,7 +3,7 @@ clc; close all; clear;
 
 %% File mangagement
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
-addpath(genpath(fullfile(pwd,'scripts')));                            % used scripts
+addpath(genpath(fullfile(pwd,'scripts')));                   % used scripts
 altikaFiles = fullfile(pwd,'ALTIKA');                        % data
 
 %% Fram Strait
@@ -146,8 +146,10 @@ for cycle = 32
         fprintf('Existing file %s has been loaded\n', cycleFile);
         load(cycleFile);
     end
+    
+    % Load velocities
+    velocities = velocity('velocity\20160303.n.S1Adrift.vector', LON, LAT);
 end
-
 
 %% Calculate height
 % Hardware variables
@@ -202,6 +204,7 @@ ssha_q = griddata(lon, lat, ssha, Xq, Yq);
 pPq = griddata(lon, lat, pP, Xq, Yq);
 mPq = griddata(lon, lat, mp, Xq, Yq);
 Wq = griddata(lon, lat, W, Xq, Yq);
+gridVelocity = gridVelocities(Xq, Yq, velocities);
 
 % Classification
 pP_class = zeros(size(Xq));
@@ -255,10 +258,21 @@ shading flat;
 colorbar;
 m_grid;
 
+%% Ice drift
+
+figure
+hold on
+m_pcolor(Xq, Yq, sla_pp_cog_q);
+m_quiver(velocities.lon, velocities.lat, velocities.x, velocities.y);
+shading flat;
+colorbar;
+m_grid;
+title('Ice drift');
+
 %% Track grid vs interp
 fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000, ...
-                        Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq);
+                        Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
 
 freeboard = freeboardAnalysis(fluxgate);
 
-plotFluxgate(Xq, Yq, ssha_q, fluxgate, freeboard);
+plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, freeboard);

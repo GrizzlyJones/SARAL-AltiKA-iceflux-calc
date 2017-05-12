@@ -15,7 +15,7 @@ phi2 = deg2rad(lat2);
 deltaPhi = abs(deg2rad(lat2 - lat1));
 deltaLambda = abs(deg2rad(lon2 - lon1));
 
-a = sin(deltaPhi/2) .* sin(deltaPhi/2) + cos(phi1) .* cos(phi2) .* sin(deltaLambda/2) .* sin(deltaPhi/2);
+a = sin(deltaPhi/2) .* sin(deltaPhi/2) + cos(phi1) .* cos(phi2) .* sin(deltaLambda/2) .* sin(deltaLambda/2);
 c = 2 * atan2(sqrt(a), sqrt(1-a));
 
 dist = R * c;

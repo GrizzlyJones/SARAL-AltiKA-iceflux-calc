@@ -14,6 +14,9 @@ LAT = [79, 82];
 % Settings for map projection
 m_proj('albers equal-area', 'long', LON, 'lat', LAT, 'rectbox', 'off');
 
+% Define fluxgate
+fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000);
+
 % Init. data arrays
 lon = [];
 lat = [];
@@ -46,7 +49,7 @@ for cycle = 32
     cycleName = sprintf('cycle_%03d', cycle);
     cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
     
-    if exist(cycleFile, 'file') == 0;
+    if exist(cycleFile, 'file') == 0
         disp('No file found, creating new.');
         % All data files
         cycleFilePath = fullfile(altikaFiles, cycleName);
@@ -270,8 +273,7 @@ m_grid;
 title('Ice drift');
 
 %% Track grid vs interp
-fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000, ...
-                        Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
+fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
 
 freeboard = freeboardAnalysis(fluxgate);
 freeboard = thickness(freeboard);

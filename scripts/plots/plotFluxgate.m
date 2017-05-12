@@ -1,19 +1,28 @@
 function plotFluxgate(Xq, Yq, ssha_q, fluxgate,  freeboard)
-%PLOTFLUXGATE Summary of this function goes here
-%   Detailed explanation goes here
+%PLOTFLUXGATE plots the fluxgate and freeboards
+%   void = plotFluxgate(XQ, YQ, SSHA_Q, FLUXGATE, FREEBOARD) plots the
+%   FLUXGATE on a map alongside SSHA_Q, as well as plotting the FREEBOARD
+% 
+%   See also INITFLUXGATE, INTERPPROFILE, FREEBOARDANALYSIS
+
+warning('Implamentation of grid data will change in future versions');
+
+profile = fluxgate.profile;
+data = fluxgate.data;
+
 figure;
 subplot(1,2,1);
 m_pcolor(Xq, Yq, ssha_q);
 shading flat;
 colorbar;
 m_grid;
-m_track(fluxgate.lon, fluxgate.lat);
+m_track(profile.lon, profile.lat);
 title('Retracked SLA');
 
 subplot(2,2,2);
 hold on
-plot(fluxgate.sla);
-plot(fluxgate.class/4, 'r');
+plot(data.sla);
+plot(data.class/4, 'r');
 title('From cubic interpolation');
 
 subplot(2,2,4);
@@ -22,7 +31,7 @@ for i = 1:length(freeboard)
     plot(freeboard(i).index.start:freeboard(i).index.stop, ...
          freeboard(i).iceThickness);
 end
-xlim([0 fluxgate.steps]);
+xlim([0 profile.steps]);
 title('Freeboards');
 end
 

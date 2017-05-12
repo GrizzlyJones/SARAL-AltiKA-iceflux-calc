@@ -26,7 +26,7 @@ t.XY = coor2dist(lon(start == 1), t.lat, t.lon, lat(start == 3));
 
 t.brng = coor2brng(lon(start == 1), t.lat, t.lon, lat(start == 3));
 
-t.magn = coor2dist(lon(start == 1), t.lat, t.lon, lat(start == 3));  
+t.magn = coor2dist(lon(start == 1), t.lat, t.lon, lat(start == 3));
 
 % B = cell2mat(M(4)); 
 % C = celldisp(M(5));

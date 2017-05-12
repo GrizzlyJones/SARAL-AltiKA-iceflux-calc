@@ -3,7 +3,7 @@ clc; close all; clear;
 
 %% File mangagement
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
-addpath(fullfile(pwd,'scripts'));                            % used scripts
+addpath(genpath(fullfile(pwd,'scripts')));                            % used scripts
 altikaFiles = fullfile(pwd,'ALTIKA');                        % data
 
 %% Fram Strait
@@ -256,31 +256,9 @@ colorbar;
 m_grid;
 
 %% Track grid vs interp
-steps = 1000;
-lonx = linspace(-8.2, 8.9, steps);
-latx = linspace(81.4, 80, steps);
-fluxgate_sla_pp_cog = interp2(Xq, Yq, sla_pp_cog_q, lonx, latx);
-fluxgate_pP = interp2(Xq, Yq, pPq, lonx, latx);
-fluxgate_W = interp2(Xq, Yq, Wq, lonx, latx);
+fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000, ...
+                        Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq);
 
-figure;
-hold on
-subplot(1,2,1);
-m_pcolor(Xq, Yq, ssha_q);
-shading flat;
-colorbar;
-m_grid;
-m_track(lonx,latx);
-title('Retracked SLA');
+freeboard = freeboardAnalysis(fluxgate);
 
-subplot(2,2,2);
-plot(fluxgate_sla_pp_cog);
-title('From linear interpolation');
-
-subplot(2,2,4);
-hold on
-fluxgate_leads = zeros(steps,1);
-fluxgate_leads(fluxgate_pP > 30 & fluxgate_W < 2) = 4;
-plot(fluxgate_sla_pp_cog);
-plot(fluxgate_leads/4, 'r');
-title('From cubic interpolation');
+plotFluxgate(Xq, Yq, ssha_q, fluxgate, freeboard);

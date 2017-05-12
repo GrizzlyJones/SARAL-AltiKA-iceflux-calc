@@ -1,7 +1,7 @@
 function [t] = velocity(fileName)
 % Indhentning af hastighederne fra www.seaice.dk/N/YYYY/MM/DD/
 
-t = struct('lon', [], 'lat', [], 'x', [], 'y', [], 'magn', [], 'brng' ,[] , 'xy', [], 'XY', []);
+t = struct('lon', [], 'lat', [], 'x', [], 'y', [], 'magn', [], 'brng' ,[], 'xy', []);
 
 fileID = fopen(fileName);
 M = textscan(fileID, '%f %f %f %f %s', 'Headerlines', 1);
@@ -27,9 +27,6 @@ t.XY = coor2dist(lon(start == 1), lat(start == 1), lon(start == 3), lat(start ==
 t.brng = coor2brng(lon(start == 1), lat(start == 1), lon(start == 3), lat(start == 3));
 
 t.magn = coor2dist(lon(start == 1), lat(start == 1), lon(start == 3), lat(start == 3));
-
-% B = cell2mat(M(4)); 
-% C = celldisp(M(5));
 
 end 
 

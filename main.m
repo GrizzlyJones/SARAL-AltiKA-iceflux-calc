@@ -8,7 +8,6 @@ altikaFiles = fullfile(pwd,'ALTIKA');                        % data
 
 %% Fram Strait
 LON = [-10, 10];
-% LAT = [76, 82];
 LAT = [79, 82];
 
 % Settings for map projection
@@ -24,13 +23,20 @@ data = struct('lon', [], 'lat', [], ...
     'model_dry_tropo_corr', [], 'rad_wet_tropo_corr', [], 'iono_corr_gim', [], 'sea_state_bias', [], ...
     'range', [], 'mss', [], 'ssha', [], ...
     'solidEarthTideHeight', [], 'oceanTide', [], 'poleTide', [], 'invBarCorr', [], 'HF', []);
+dataNames = fieldnames(data);
+names40hz = {'waveforms_40hz', 'agc_40hz', 'tracker_40hz', 'alt_40hz'};
+corrNames = {'modeled_instr_corr_range', 'doppler_corr', ...
+    'model_dry_tropo_corr', 'rad_wet_tropo_corr', 'iono_corr_gim', ...
+    'sea_state_bias', 'range_40hz', 'mean_sea_surface', 'ssha', ...
+    'solid_earth_tide', 'ocean_tide_sol2', 'pole_tide', ...
+    'inv_bar_corr', 'hf_fluctuations_corr'};
 
 %% Load data
 for cycle = 32
     cycleName = sprintf('cycle_%03d', cycle);
     cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
     
-    if exist(cycleFile, 'file') == 0
+    if exist(cycleFile, 'file') ~= 0
         disp('No file found, creating new.');
         % All data files
         cycleFilePath = fullfile(altikaFiles, cycleName);
@@ -57,60 +63,18 @@ for cycle = 32
                 continue;
             end
             
-            % Tmp import of data variables
-            tmpWave = ncread(filePath, 'waveforms_40hz');
-            tmpAGC = ncread(filePath, 'agc_40hz');
-            tmpTracker = ncread(filePath, 'tracker_40hz');
-            tmpAlt = ncread(filePath, 'alt_40hz');
-            
-            tmpModeled_intr_corr = ncread(filePath, 'modeled_instr_corr_range');
-            tmpDoppler_corr = ncread(filePath, 'doppler_corr');
-            
-            tmpModel_dry_tropo_corr = ncread(filePath, 'model_dry_tropo_corr');
-            tmpRad_wet_tropo_corr = ncread(filePath, 'rad_wet_tropo_corr');
-            tmpIono_corr_gim = ncread(filePath, 'iono_corr_gim');
-            tmpSea_state_bias = ncread(filePath, 'sea_state_bias');
-            
-            tmpRange = ncread(filePath, 'range_40hz');
-            
-            tmpMss = ncread(filePath, 'mean_sea_surface');
-            tmpSsha = ncread(filePath, 'ssha');
-            
-            tmpSolidEarthTideHeight = ncread(filePath, 'solid_earth_tide');
-            tmpOceanTide = ncread(filePath, 'ocean_tide_sol2');
-            tmpPoleTide = ncread(filePath, 'pole_tide');
-            tmpInvBarCorr = ncread(filePath, 'inv_bar_corr');
-            tmpHF = ncread(filePath, 'hf_fluctuations_corr');
-            
-            tmpN = length(tmpLon(filter));
-            x = linspace(1,length(tmpHF(filter(1,:))), tmpN);
-            
             % Filtration of found data, saving for later use
-            lon = vertcat(lon, tmpLon(filter));
-            lat = vertcat(lat, tmpLat(filter));
-            wave = horzcat(wave, tmpWave(:,filter));
-            agc = vertcat(agc, tmpAGC(filter));
-            tracker = vertcat(tracker, tmpTracker(filter));
-            alt = vertcat(alt, tmpAlt(filter));
+            data.lon = vertcat(data.lon, tmpLon(filter));
+            data.lat = vertcat(data.lat, tmpLat(filter));
             
-            modeled_instr_corr = vertcat(modeled_instr_corr, interp1(tmpModeled_intr_corr(filter(1, :)), x)');
-            doppler_corr = vertcat(doppler_corr, interp1(tmpDoppler_corr(filter(1, :)), x)');
+            for k = 3:length(names40hz)
+                disp(dataNames{k})
+               data.(dataNames{k}) = load(data.(dataNames{k}), filePath, names40hz{k - 2}, filter);
+            end
             
-            model_dry_tropo_corr = vertcat(model_dry_tropo_corr, interp1(tmpModel_dry_tropo_corr(filter(1, :)), x)');
-            rad_wet_tropo_corr = vertcat(rad_wet_tropo_corr, interp1(tmpRad_wet_tropo_corr(filter(1, :)), x)');
-            iono_corr_gim = vertcat(iono_corr_gim, interp1(tmpIono_corr_gim(filter(1, :)), x)');
-            sea_state_bias = vertcat(sea_state_bias, interp1(tmpSea_state_bias(filter(1, :)), x)');
-            
-            range = vertcat(range, interp1(tmpRange(filter), x)');
-            
-            mss = vertcat(mss, interp1(tmpMss(filter(1,:)), x)');
-            ssha = vertcat(ssha, interp1(tmpSsha(filter(1,:)), x)');
-            
-            solidEarthTideHeight = vertcat(solidEarthTideHeight, interp1(tmpSolidEarthTideHeight(filter(1,:)), x)');
-            oceanTide = vertcat(oceanTide, interp1(tmpOceanTide(filter(1,:)), x)');
-            poleTide = vertcat(poleTide, interp1(tmpPoleTide(filter(1,:)), x)');
-            invBarCorr = vertcat(invBarCorr, interp1(tmpInvBarCorr(filter(1,:)), x)');
-            HF = vertcat(HF, interp1(tmpHF(filter(1,:)), x)');
+            for k = 7:length(dataNames)
+               data.(dataNames{k}) = loadCorr(data.(dataNames{k}), filePath, corrNames{k - 6}, filter); 
+            end
             
             % Remove tmp variables from workspace
             clear -regexp ^tmp

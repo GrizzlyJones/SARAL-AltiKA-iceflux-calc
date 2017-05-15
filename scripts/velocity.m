@@ -21,11 +21,12 @@ start = input(skip,3) == 1;         % Start positions
 stop = input(skip,3) == 3;          % Stop position
 
 lon = input(skip,2);
-filLon = (LON(1) - 1) < lon & lon < (LON(2) + 1) & stop;
 lat = input(skip,1);
-filLat = (LAT(1) - 1) < lat & lat < (LAT(2) + 1) & stop;
 
 %% Filter for earth
+filLon = (LON(1) - 1) < lon & lon < (LON(2) + 1) & stop;
+filLat = (LAT(1) - 1) < lat & lat < (LAT(2) + 1) & stop;
+
 filter = filLat & filLon;
 filter = filter | circshift(filter, -1);
 

@@ -16,7 +16,8 @@ if length(fluxgate.sla) ~= length(fluxgate.class)
 end
 
 %% Generate structs
-iceSheets = struct('lon', [], 'lat', [], 'freeboard', [], 'index', []);
+iceSheets = struct('lon', [], 'lat', [], 'freeboard', [], ...
+    'iceThickness', [], 'index', []);
 iceSheets.index = struct('start', [], 'stop', []);
 
 tmp = struct('heights', [], 'leads', []);
@@ -68,5 +69,6 @@ tmp(index).leads = fluxgate.sla(tmpStop:indexStart);
 for i = 1:length(iceSheets)
     avgLead = (mean(tmp(i).leads) + mean(tmp(i+1).leads)) / 2;
     iceSheets(i).freeboard = tmp(i).heights - avgLead;
+    iceSheets(i).freeboard(iceSheets(i).freeboard < 0) = 0;
 end
 end

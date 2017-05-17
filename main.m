@@ -277,5 +277,8 @@ fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVe
 
 freeboard = freeboardAnalysis(fluxgate);
 freeboard = thickness(freeboard);
+normVelocities = projVelocity(fluxgate);
+
+sum(freeboard * normVelocities * fluxgate.profile.stepSize);
 
 plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, freeboard);

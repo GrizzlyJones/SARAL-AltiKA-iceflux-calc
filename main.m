@@ -260,5 +260,6 @@ fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000, ...
                         Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq);
 
 freeboard = freeboardAnalysis(fluxgate);
+freeboard = thickness(freeboard);
 
 plotFluxgate(Xq, Yq, ssha_q, fluxgate, freeboard);

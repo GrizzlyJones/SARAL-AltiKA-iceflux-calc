@@ -20,7 +20,7 @@ subplot(2,2,4);
 hold on
 for i = 1:length(freeboard)
     plot(freeboard(i).index.start:freeboard(i).index.stop, ...
-         freeboard(i).freeboard);
+         freeboard(i).iceThickness);
 end
 xlim([0 fluxgate.steps]);
 title('Freeboards');

@@ -11,7 +11,8 @@ warning('Implamentation of grid data will change in future versions');
 
 %% Generate struct
 fluxgate = struct('lon', [], 'lat', [], 'steps', steps, ...
-                  'sla', [], 'ssha', [], 'pP', [], 'W', [], 'class', []);
+                  'sla', [], 'ssha', [], 'pP', [], 'W', [], 'class', [],...
+                  'freeboard', [], 'iceThickness', []);
 
 %% Creating path for fluxgate
 fluxgate.lon = linspace(lon(1), lon(2), fluxgate.steps);

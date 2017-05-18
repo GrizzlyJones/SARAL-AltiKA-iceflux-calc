@@ -25,7 +25,7 @@ function [ fluxgate ] = initFluxgate( lon, lat, steps )
 %% Generate struct
 fluxgate = struct('profile', [], 'data', []);
 fluxgate.profile = struct('lon', [], 'lat', [], 'brng', [], ...
-                          'steps', steps, 'stepSize', []);
+                          'steps', steps, 'stepWidth', [], 'cumStep', []);
 fluxgate.data = struct('sla', [], 'ssha', [], 'magn', [], 'brng', [], ...
                        'pP', [], 'W', [], 'class', []);
 
@@ -34,5 +34,13 @@ fluxgate.profile.lon = linspace(lon(1), lon(2), steps);
 fluxgate.profile.lat = linspace(lat(1), lat(2), steps);
 fluxgate.profile.brng = coor2brng(lon(1), lat(1), lon(2), lat(2));
 fluxgate.profile.stepSize = coor2dist(lon(1), lat(1), lon(2), lat(2)) / steps;
+
+%% Calculating step width
+fluxgate.profile.stepWidth = coor2dist(...
+    fluxgate.profile.lon(1:end-1), fluxgate.profile.lat(1:end-1), ...
+    fluxgate.profile.lon(2:end), fluxgate.profile.lat(2:end));
+tmpCumStep = cumsum(fluxgate.profile.stepWidth);
+fluxgate.profile.cumStep = [0, tmpCumStep];
+
 end
 

@@ -19,19 +19,26 @@ m_grid;
 m_track(profile.lon, profile.lat);
 title('Retracked SLA');
 
+dist = fluxgate.profile.cumStep/10e3;
+
 subplot(2,2,2);
 hold on
-plot(data.sla);
-plot(data.class/4, 'r');
+plot(dist, data.sla);
+plot(dist, data.class/4, 'r');
+xlim([0, dist(end)]);
+xlabel('Distance [km]');
+ylabel('Height [m]');
 title('From cubic interpolation');
 
 subplot(2,2,4);
 hold on
 for i = 1:length(freeboard)
-    plot(freeboard(i).index.start:freeboard(i).index.stop, ...
-         freeboard(i).iceThickness);
+    plot(dist(freeboard(i).index.start:freeboard(i).index.stop), ...
+         freeboard(i).freeboard);
 end
-xlim([0 profile.steps]);
+xlim([0, dist(end)]);
+xlabel('Distance [km]');
+ylabel('Height [m]');
 title('Freeboards');
 end
 

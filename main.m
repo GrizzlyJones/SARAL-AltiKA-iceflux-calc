@@ -13,6 +13,7 @@ LAT = [79, 82];
 % Settings for map projection
 m_proj('albers equal-area', 'long', LON, 'lat', LAT, 'rectbox', 'off');
 
+
 % Define fluxgate
 fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000);
 
@@ -40,7 +41,7 @@ for cycle = 32
     cycleName = sprintf('cycle_%03d', cycle);
     cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
     
-    if exist(cycleFile, 'file') == 0
+    if exist(cycleFile, 'file') ~= 0
         disp('No file found, creating new.');
         % All data files
         cycleFilePath = fullfile(altikaFiles, cycleName);
@@ -72,12 +73,10 @@ for cycle = 32
             data.lat = vertcat(data.lat, tmpLat(filter));
             
             for k = 1:length(names40hz)
-                disp(dataNames{k})
                data.(dataNames{k}) = load40hz(data.(dataNames{k}), filePath, names40hz{k}, filter);
             end
             
             for k = 1:length(corrNames)
-                disp(dataNames{k+4})
                data.(dataNames{k+4}) = loadCorr(data.(dataNames{k+4}), filePath, corrNames{k}, filter); 
             end
             

@@ -5,7 +5,7 @@ function [ data ] = load40hz( array, filePath, variable, filter )
 tmpData = ncread(filePath, variable);
             
 if ~isempty(strfind(variable, 'waveforms'))
-    data = vertcat(array, tmpData(:, filter));
+    data = horzcat(array, tmpData(:, filter));
 else
 data = vertcat(array, tmpData(filter));
 end

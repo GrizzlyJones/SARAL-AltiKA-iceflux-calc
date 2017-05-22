@@ -34,7 +34,6 @@ fluxgate.profile.lon = linspace(lon(1), lon(2), steps);
 fluxgate.profile.lat = linspace(lat(1), lat(2), steps);
 fluxgate.profile.brng = coor2brng(lon(1), lat(1), lon(2), lat(2));
 fluxgate.profile.stepSize = coor2dist(lon(1), lat(1), lon(2), lat(2)) / steps;
-<<<<<<< HEAD
 
 %% Calculating step width
 fluxgate.profile.stepWidth = coor2dist(...
@@ -42,8 +41,5 @@ fluxgate.profile.stepWidth = coor2dist(...
     fluxgate.profile.lon(2:end), fluxgate.profile.lat(2:end));
 tmpCumStep = cumsum(fluxgate.profile.stepWidth);
 fluxgate.profile.cumStep = [0, tmpCumStep];
-
-=======
->>>>>>> 70fe8215dc32f84f97fcae112bc6b6ff28ffc912
 end
 

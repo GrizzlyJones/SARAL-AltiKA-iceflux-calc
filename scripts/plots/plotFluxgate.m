@@ -23,16 +23,11 @@ dist = fluxgate.profile.cumStep/10e3;
 
 subplot(2,2,2);
 hold on
-<<<<<<< HEAD
 plot(dist, data.sla);
 plot(dist, data.class/4, 'r');
 xlim([0, dist(end)]);
 xlabel('Distance [km]');
 ylabel('Height [m]');
-=======
-plot(data.sla);
-plot(data.class/4, 'r');
->>>>>>> 70fe8215dc32f84f97fcae112bc6b6ff28ffc912
 title('From cubic interpolation');
 
 subplot(2,2,4);

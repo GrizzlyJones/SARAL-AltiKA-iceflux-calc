@@ -276,8 +276,13 @@ title('Ice drift');
 fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
 
 freeboard = freeboardAnalysis(fluxgate);
-freeboard = thickness(freeboard);
+freeboard = thickness(freeboard, 'radar');
 normVelocities = projVelocity(fluxgate);
-flux = calcFlux(fluxgate, freeboard, normVelocities)
+
+[volFlow, flow] = calcVolFlow(fluxgate, freeboard, normVelocities);
+fprintf('The volumetric flow is %.2f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
+
+figure;
+plot(fluxgate.profile.cumStep, flow);
 
 plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, freeboard);

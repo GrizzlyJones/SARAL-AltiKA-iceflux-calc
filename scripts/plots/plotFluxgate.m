@@ -1,14 +1,15 @@
-function plotFluxgate(Xq, Yq, ssha_q, fluxgate,  freeboard)
+function plotFluxgate(gridData, fluxgate,  freeboard)
 %PLOTFLUXGATE plots the fluxgate and freeboards
-%   void = plotFluxgate(XQ, YQ, SSHA_Q, FLUXGATE, FREEBOARD) plots the
+%   void = plotFluxgate(GRIDDATA, FLUXGATE, FREEBOARD) plots the
 %   FLUXGATE on a map alongside SSHA_Q, as well as plotting the FREEBOARD
 % 
 %   See also INITFLUXGATE, INTERPPROFILE, FREEBOARDANALYSIS
 
-warning('Implamentation of grid data will change in future versions');
-
 profile = fluxgate.profile;
 data = fluxgate.data;
+
+Xq = gridData.Xq;
+Yq = griData.Yq;
 
 figure;
 subplot(1,2,1);

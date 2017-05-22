@@ -4,7 +4,7 @@ clc; close all; clear;
 %% File mangagement
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
 addpath(genpath(fullfile(pwd,'scripts')));                   % used scripts
-altikaFiles = fullfile(pwd,'ALTIKA');                        % data
+altikaFiles = 'D:\Altika';                                   % data
 
 %% Fram Strait
 LON = [-10, 10];
@@ -24,6 +24,10 @@ data = struct('lon', [], 'lat', [], ...
     'range', [], 'mss', [], 'ssha', [], ...
     'solidEarthTideHeight', [], 'oceanTide', [], 'poleTide', [], 'invBarCorr', [], 'HF', []);
 dataNames = fieldnames(data);
+for name = dataNames
+    data.(name{1}) = [];
+end
+dataNames(1:2)=[];
 names40hz = {'waveforms_40hz', 'agc_40hz', 'tracker_40hz', 'alt_40hz'};
 corrNames = {'modeled_instr_corr_range', 'doppler_corr', ...
     'model_dry_tropo_corr', 'rad_wet_tropo_corr', 'iono_corr_gim', ...
@@ -36,7 +40,7 @@ for cycle = 32
     cycleName = sprintf('cycle_%03d', cycle);
     cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
     
-    if exist(cycleFile, 'file') ~= 0
+    if exist(cycleFile, 'file') == 0
         disp('No file found, creating new.');
         % All data files
         cycleFilePath = fullfile(altikaFiles, cycleName);
@@ -67,13 +71,14 @@ for cycle = 32
             data.lon = vertcat(data.lon, tmpLon(filter));
             data.lat = vertcat(data.lat, tmpLat(filter));
             
-            for k = 3:length(names40hz)
+            for k = 1:length(names40hz)
                 disp(dataNames{k})
-               data.(dataNames{k}) = load(data.(dataNames{k}), filePath, names40hz{k - 2}, filter);
+               data.(dataNames{k}) = load40hz(data.(dataNames{k}), filePath, names40hz{k}, filter);
             end
             
-            for k = 7:length(dataNames)
-               data.(dataNames{k}) = loadCorr(data.(dataNames{k}), filePath, corrNames{k - 6}, filter); 
+            for k = 1:length(corrNames)
+                disp(dataNames{k+4})
+               data.(dataNames{k+4}) = loadCorr(data.(dataNames{k+4}), filePath, corrNames{k}, filter); 
             end
             
             % Remove tmp variables from workspace
@@ -222,7 +227,7 @@ m_grid;
 title('Ice drift');
 
 %% Track grid vs interp
-fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
+fluxgate = interpProfile(fluxgate, gridData, gridVelocity);
 
 freeboard = freeboardAnalysis(fluxgate);
 freeboard = thickness(freeboard, 'radar');
@@ -234,4 +239,4 @@ fprintf('The volumetric flow is %.2f cubic kilometers per day (positive is north
 figure;
 plot(fluxgate.profile.cumStep, flow);
 
-plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, freeboard);
+plotFluxgate(gridData, fluxgate, freeboard);

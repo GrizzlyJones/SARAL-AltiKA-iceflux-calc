@@ -1,14 +1,19 @@
-function [ fluxgate ] = interpProfile( fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity )
+function [ fluxgate ] = interpProfile( fluxgate, gridData, gridVelocity )
 %INTERPPROFILE Interpolates from griddata to profile
-%   fluxgate = interpProfile(FLUXGATE, XQ, YQ, SLA_PP_COG_Q, SSHA_Q, PPQ,
-%   WQ, GRIDVELOCITY) interpolates from a grid to desired fluxgate profile.
+%   fluxgate = interpProfile(FLUXGATE, GRIDDATA, GRIDVELOCITY) interpolates
+%   from a grid to desired fluxgate profile.
 %
 %   See also INITFLUXGATE
 
-warning('Implamentation of grid data will change in future versions');
-
 profile = fluxgate.profile;
 data = fluxgate.data;
+
+Xq = gridData.Xq;
+Yq = griData.Yq;
+sla_pp_cog_q = gridData.sla_pp_cog_q;
+ssha_q = gridData.ssha_q;
+pPq = gridData.pPq;
+Wq = gridData.Wq;
 
 %% Interpolates data on path
 data.sla = interp2(Xq, Yq, sla_pp_cog_q, profile.lon, profile.lat);

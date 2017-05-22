@@ -4,7 +4,7 @@ clc; close all; clear;
 %% File mangagement
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
 addpath(genpath(fullfile(pwd,'scripts')));                   % used scripts
-altikaFiles = fullfile(pwd,'ALTIKA');                        % data
+altikaFiles = 'D:\Altika';                                   % data
 
 %% Fram Strait
 LON = [-10, 10];

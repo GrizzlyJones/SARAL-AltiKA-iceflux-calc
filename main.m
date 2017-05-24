@@ -273,16 +273,26 @@ m_grid;
 title('Ice drift');
 
 %% Track grid vs interp
+freeboard_cryo = cryoSat('cs2awi_nh_201603.nc', sea_ice_freeboard, fluxgate, LON, LAT);
+
 fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
 
-freeboard = freeboardAnalysis(fluxgate);
-freeboard = thickness(freeboard, 'radar');
+iceSheet = freeboardAnalysis(fluxgate);
+iceSheet = thickness(iceSheet, 'radar');
 normVelocities = projVelocity(fluxgate);
 
-[volFlow, flow] = calcVolFlow(fluxgate, freeboard, normVelocities);
+[volFlow, flow] = calcVolFlow(fluxgate, iceSheet, normVelocities);
 fprintf('The volumetric flow is %.2f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
 
 figure;
 plot(fluxgate.profile.cumStep, flow);
 
-plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, freeboard);
+plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, iceSheet);
+
+figure;
+subplot(3,1,1)
+plot(fluxgate.profile.cumStep/1e3, freeboard_cryo);
+subplot(3,1,2)
+plot(fluxgate.profile.cumStep/1e3, iceSheet.freeboard);
+subplot(3,1,3)
+plot(fluxgate.profile.cumStep/1e3, iceSheet.freeboard-freeboard_cryo);

@@ -71,7 +71,7 @@ for cycle = 32
             filter = filLat & filLon;
             
             % Skips iteration if no useful data is detected
-            if ~(any(filter(:))) || sum(filter(:)) < 5
+            if ~(any(filter(:))) || sum(filter(:)) < 5 || sum(filter(1,:)) == 1
                 % fprintf('%d skipped\n', j);
                 continue;
             end

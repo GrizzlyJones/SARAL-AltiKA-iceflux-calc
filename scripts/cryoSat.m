@@ -1,4 +1,4 @@
-function freeboard_line = cryoSat(filePath, var, fluxgate, LON, LAT)
+function freeboard_line = cryoSat(filePath, var, fluxgate, LON, LAT, Xq, Yq)
 
 % Tmp import of Lon and Lat
 tmpLon = ncread(filePath, 'longitude');

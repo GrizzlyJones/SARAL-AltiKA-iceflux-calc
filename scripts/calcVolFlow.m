@@ -1,4 +1,4 @@
-function [ volFlow, flow ] = calcVolFlow( fluxgate, iceSheet, normVelocities )
+function [ volFlow, flow ] = calcVolFlow( fluxgate, h_i, normVelocities )
 %CALCFLUX Calculates the volumetric flow rate through the fluxgate
 %   volFlow = calcVolFlow(FLUXGATE, ICESHEET, NORMVELOCITIES) calculates 
 %   the volumetric flow rate through the FLUXGATE, by integrating the 
@@ -7,7 +7,7 @@ function [ volFlow, flow ] = calcVolFlow( fluxgate, iceSheet, normVelocities )
 % 
 %   See also INITFLUXGATE, THICKNESS, PROJVELOCITIES
 
-h_i = flattenIcesheet(fluxgate, iceSheet, 'iceThickness');
+% h_i = flattenIcesheet(fluxgate, iceSheet, 'iceThickness');
 
 flow = h_i .* normVelocities;
 flow(isnan(flow)) = 0;

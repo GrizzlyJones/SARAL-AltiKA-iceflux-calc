@@ -273,7 +273,8 @@ m_grid;
 title('Ice drift');
 
 %% Track grid vs interp
-freeboard_cryo = cryoSat('cs2awi_nh_201603.nc', sea_ice_freeboard, fluxgate, LON, LAT);
+freeboard_cryo = cryoSat('cs2awi_nh_201603.nc', 'sea_ice_freeboard', fluxgate, LON, LAT, Xq, Yq);
+thickness_cryo = cryoSat('cs2awi_nh_201603.nc', 'sea_ice_thickness', fluxgate, LON, LAT, Xq, Yq);
 
 fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
 
@@ -281,18 +282,37 @@ iceSheet = freeboardAnalysis(fluxgate);
 iceSheet = thickness(iceSheet, 'radar');
 normVelocities = projVelocity(fluxgate);
 
-[volFlow, flow] = calcVolFlow(fluxgate, iceSheet, normVelocities);
-fprintf('The volumetric flow is %.2f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
+h_f = flattenIcesheet(fluxgate, iceSheet, 'freeboard');
+h_i = flattenIcesheet(fluxgate, iceSheet, 'iceThickness');
 
-figure;
-plot(fluxgate.profile.cumStep, flow);
+[volFlow, flow] = calcVolFlow(fluxgate, h_i, normVelocities);
+cryoFlow = calcVolFlow(fluxgate, thickness_cryo, normVelocities);
+fprintf('SARAL/AltiKa: \t%2.2f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
+fprintf('CryoSat 2: \t\t%2.2f cubic kilometers per day (positive is northen flow)\n', cryoFlow*1e-9);
 
-plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, iceSheet);
+% figure;
+% plot(fluxgate.profile.cumStep, flow);
+% 
+% plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, iceSheet);
 
 figure;
 subplot(3,1,1)
 plot(fluxgate.profile.cumStep/1e3, freeboard_cryo);
+title('CryoSat 2 freeboard');
 subplot(3,1,2)
-plot(fluxgate.profile.cumStep/1e3, iceSheet.freeboard);
+plot(fluxgate.profile.cumStep/1e3, h_f);
+title('SARAL/AltiKa freeboard');
 subplot(3,1,3)
-plot(fluxgate.profile.cumStep/1e3, iceSheet.freeboard-freeboard_cryo);
+plot(fluxgate.profile.cumStep/1e3, h_f-freeboard_cryo);
+title('Difference');
+    
+figure;
+subplot(3,1,1)
+plot(fluxgate.profile.cumStep/1e3, thickness_cryo);
+title('CryoSat 2 ice thickness');
+subplot(3,1,2)
+plot(fluxgate.profile.cumStep/1e3, h_i);
+title('SARAL/AltiKa ice thickness');
+subplot(3,1,3)
+plot(fluxgate.profile.cumStep/1e3, h_i-thickness_cryo);
+title('Difference');

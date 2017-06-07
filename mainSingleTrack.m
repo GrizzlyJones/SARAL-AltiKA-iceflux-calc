@@ -4,7 +4,8 @@ clc; close all; clear;
 %% File mangagement
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
 addpath(fullfile(pwd,'scripts'));                            % used scripts
-altikaFiles = fullfile(pwd,'ALTIKA');                        % data
+altikaFiles = 'E:\Altika';                                   % data
+s = hgexport('readstyle', 'Bachelor');                       % export type
 
 %% Fram Strait
 LON = [-10, 10];
@@ -49,7 +50,7 @@ cycle = 32;
 j = 109;
 
 cycleName = sprintf('cycle_%03d', cycle);
-cycleFile = strcat(cycleName, '.mat');
+cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
 cycleFilePath = fullfile(altikaFiles, cycleName);
 lis = dir(cycleFilePath);
 lis(1:2) = [];
@@ -248,6 +249,7 @@ colorbar;
 xlabel('Waveform #');
 ylabel('Gate bin');
 title('Image of track waveforms');
+hgexport(gcf, strcat('figures\full_spectrum_' ,cycleName), s);
 
 %%
 figure;
@@ -265,10 +267,24 @@ m_gshhs('lc', 'color', 'k');
 m_grid;
 
 %%
+i=1;
+figure;
+hold on;
+plot(wave(:,i));
+line([C_ntp, C_ntp], get(gca, 'ylim'), 'color', 'g', 'linestyle', '--');
+title('Wave');
+xlabel('Bin #');
+ylabel('Counts');
+set(gcf,'units','points','position',[50,250,595,420]);
+fnam = sprintf('figures\\single_wave_cycle_%s_N%f_E%f', cycleName, lat(i), lon(i));
+fnam = strrep(fnam, '.', '-');
+hgexport(gcf, fnam, s);
+
+%%
 if strcmp(input('Make movie (y/n)\n', 's'), 'y')
 fig = figure('units', 'pixels', 'position', [400 100 1024 768]);
 f = struct('cdata', cell(1, 100), 'colormap', cell(1, 100));
-for i = 260:360
+for i = 1:length(wave(1,:))
     subplot(2,1,1);
     plot(wave(:,i));
     line([C_rtrk_ocog(i), C_rtrk_ocog(i)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');

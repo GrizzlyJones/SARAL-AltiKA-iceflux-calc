@@ -5,7 +5,7 @@ clc; close all; clear;
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
 addpath(fullfile(pwd,'scripts'));                            % used scripts
 altikaFiles = 'E:\Altika';                                   % data
-s = hgexport('readstyle', 'Bachelor');                       % export type
+load('scripts/style');                                       % export type
 
 %% Fram Strait
 LON = [-10, 10];
@@ -241,6 +241,22 @@ title('PP COG (Threshold retracker)');
 legend('wave', 'primary peak', 'retracked point', 'reference bin')
 
 %%
+% Waveforms PPCOG
+figure;
+hold on;
+plot(wave(:,i));
+plot(pStart(i):pStop(i), wave(pStart(i):pStop(i),i), 'color', 'r');
+line([C_rtrk_pp_cog(i), C_rtrk_pp_cog(i)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');
+line([C_ntp, C_ntp], get(gca,'ylim'), 'color', 'g', 'linestyle', '--');
+rectangle('position', [C_rtrk_pp_cog(i) 0 W_pp_cog(i) M_pp_cog(i)]);
+title('PP COG (Threshold retracker)');
+xlabel('Bin #');
+ylabel('Count');
+legend('wave', 'primary peak', 'retracked point', 'reference bin');
+fnam = sprintf('figures/ppcog_%s', cycleName);
+hgexport(gcf, fnam, style);
+
+%%
 figure;
 colormap(jet)
 imagesc(wave())
@@ -249,7 +265,7 @@ colorbar;
 xlabel('Waveform #');
 ylabel('Gate bin');
 title('Image of track waveforms');
-hgexport(gcf, strcat('figures\full_spectrum_' ,cycleName), s);
+hgexport(gcf, strcat('figures\full_spectrum_' ,cycleName), style);
 
 %%
 figure;
@@ -278,7 +294,7 @@ ylabel('Counts');
 set(gcf,'units','points','position',[50,250,595,420]);
 fnam = sprintf('figures\\single_wave_cycle_%s_N%f_E%f', cycleName, lat(i), lon(i));
 fnam = strrep(fnam, '.', '-');
-hgexport(gcf, fnam, s);
+hgexport(gcf, fnam, style);
 
 %%
 if strcmp(input('Make movie (y/n)\n', 's'), 'y')

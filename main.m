@@ -5,6 +5,7 @@ clc; close all; clear;
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
 addpath(genpath(fullfile(pwd,'scripts')));                   % used scripts
 altikaFiles = 'D:\Altika';                                   % data
+load('scripts/style');
 
 %% Fram Strait
 LON = [-10, 10];
@@ -266,11 +267,16 @@ m_grid;
 figure
 hold on
 m_pcolor(Xq, Yq, sla_pp_cog_q);
-m_quiver(velocities.lon, velocities.lat, velocities.x, velocities.y);
+scale = 0;
+m_quiver(velocities.lon, velocities.lat, velocities.x/100000, velocities.y/100000, scale);
+m_quiver(4.5, 79.25, .5, 0, scale,'color', 'k');
+m_text(6, 79.13, '50 km day^{-1}', 'FontSize', 14, 'horizontalAlignment', 'center');
 shading flat;
 colorbar;
 m_grid;
 title('Ice drift');
+fnam = sprintf('figures/ice_drift_%s',cycleName);
+% hgexport(gcf, fnam, style);
 
 %% Track grid vs interp
 fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);

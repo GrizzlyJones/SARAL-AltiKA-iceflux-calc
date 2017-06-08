@@ -225,14 +225,19 @@ mP_class(mPq >= 70) = 4;
 mask = ~isnan(ssha_q);
 
 %% Track grid vs interp
+freeboard_cryo = cryoSat('cs2awi_nh_201603.nc', 'sea_ice_freeboard', fluxgate, LON, LAT, Xq, Yq);
+thickness_cryo = cryoSat('cs2awi_nh_201603.nc', 'sea_ice_thickness', fluxgate, LON, LAT, Xq, Yq);
+
 fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
 
-freeboard = freeboardAnalysis(fluxgate);
-freeboard = thickness(freeboard, 'radar');
+iceSheet = freeboardAnalysis(fluxgate);
+iceSheet = thickness(iceSheet, 'radar');
 normVelocities = projVelocity(fluxgate);
 
-[volFlow, flow] = calcVolFlow(fluxgate, freeboard, normVelocities);
-fprintf('The volumetric flow is %.2f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
+[volFlow, flow] = calcVolFlow(fluxgate, h_i, normVelocities);
+cryoFlow = calcVolFlow(fluxgate, thickness_cryo, normVelocities);
+fprintf('SARAL/AltiKa: \t%2.2f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
+fprintf('CryoSat 2: \t\t%2.2f cubic kilometers per day (positive is northen flow)\n', cryoFlow*1e-9);
 
 %% Plot
 % Primary Peak COG Map
@@ -258,3 +263,35 @@ plotFluxgateProfile(Xq, Yq, sla_pp_cog_q, fluxgate, style, cycleName);
 
 %% Area
 plotArea(LON,LAT, fluxgate);
+
+%% CryoSat
+% figure;
+% plot(fluxgate.profile.cumStep, flow);
+% 
+% plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, iceSheet);
+
+
+h_f = flattenIcesheet(fluxgate, iceSheet, 'freeboard');
+h_i = flattenIcesheet(fluxgate, iceSheet, 'iceThickness');
+
+figure;
+subplot(3,1,1)
+plot(fluxgate.profile.cumStep/1e3, freeboard_cryo);
+title('CryoSat 2 freeboard');
+subplot(3,1,2)
+plot(fluxgate.profile.cumStep/1e3, h_f);
+title('SARAL/AltiKa freeboard');
+subplot(3,1,3)
+plot(fluxgate.profile.cumStep/1e3, h_f-freeboard_cryo);
+title('Difference');
+    
+figure;
+subplot(3,1,1)
+plot(fluxgate.profile.cumStep/1e3, thickness_cryo);
+title('CryoSat 2 ice thickness');
+subplot(3,1,2)
+plot(fluxgate.profile.cumStep/1e3, h_i);
+title('SARAL/AltiKa ice thickness');
+subplot(3,1,3)
+plot(fluxgate.profile.cumStep/1e3, h_i-thickness_cryo);
+title('Difference');

@@ -248,11 +248,12 @@ plot(wave(:,i));
 plot(pStart(i):pStop(i), wave(pStart(i):pStop(i),i), 'color', 'r');
 line([C_rtrk_pp_cog(i), C_rtrk_pp_cog(i)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');
 line([C_ntp, C_ntp], get(gca,'ylim'), 'color', 'g', 'linestyle', '--');
-rectangle('position', [C_rtrk_pp_cog(i) 0 W_pp_cog(i) M_pp_cog(i)]);
+rectangle('position', [C_rtrk_pp_cog(i) 0 W_pp_cog(i) M_pp_cog(i)], 'EdgeColor', [.25, .25, .25]);
+plot(nan, nan, 'color', [.25, .25, .25])
 title('PP COG (Threshold retracker)');
 xlabel('Bin #');
 ylabel('Count');
-legend('wave', 'primary peak', 'retracked point', 'reference bin');
+legend('wave', 'primary peak', 'retracked point', 'reference bin', 'OCOG rectangle');
 fnam = sprintf('figures/ppcog_%s', cycleName);
 hgexport(gcf, fnam, style);
 

@@ -4,17 +4,16 @@ clc; close all; clear;
 %% File mangagement
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
 addpath(genpath(fullfile(pwd,'scripts')));                   % used scripts
-altikaFiles = 'D:\Altika';                                   % data
-velocityFile = 'velocity\20160303.n.S1Adrift.vector';
-cycles = 32;
+altikaFiles = 'E:\Altika';                                   % data
+load('scripts/style');
 
 %% Fram Strait
-LON = [-10, 10];
+LON = [-30, -25];
 % LAT = [76, 82];
-LAT = [79, 82];
+LAT = [-5, 5];
 
 % Settings for map projection
-m_proj('albers equal-area', 'long', LON, 'lat', LAT, 'rectbox', 'off');
+m_proj('Equidistant Cylindrical', 'long', LON, 'lat', LAT);
 
 % Define fluxgate
 fluxgate = initFluxgate([-8.2, 8.9], [81.4, 80], 1000);
@@ -47,9 +46,9 @@ invBarCorr = [];
 HF = [];
 
 %% Load data
-for cycle = cycles
+for cycle = 32
     cycleName = sprintf('cycle_%03d', cycle);
-    cycleFile = fullfile(pwd,'data', strcat(cycleName, '.mat'));
+    cycleFile = fullfile(pwd,'data', strcat('eq_', cycleName, '.mat'));
     
     if exist(cycleFile, 'file') == 0
         disp('No file found, creating new.');
@@ -153,7 +152,7 @@ for cycle = cycles
     end
     
     % Load velocities
-    velocities = velocity(velocityFile, LON, LAT);
+%     velocities = velocity('velocity\20160303.n.S1Adrift.vector', LON, LAT);
 end
 
 %% Calculate height
@@ -209,7 +208,7 @@ ssha_q = griddata(lon, lat, ssha, Xq, Yq);
 pPq = griddata(lon, lat, pP, Xq, Yq);
 mPq = griddata(lon, lat, mp, Xq, Yq);
 Wq = griddata(lon, lat, W, Xq, Yq);
-gridVelocity = gridVelocities(Xq, Yq, velocities);
+% gridVelocity = gridVelocities(Xq, Yq, velocities);
 
 % Classification
 pP_class = zeros(size(Xq));
@@ -221,37 +220,100 @@ mP_class(mPq >= 70) = 4;
 %% Mask
 mask = ~isnan(ssha_q);
 
-%% Track grid vs interp
-fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
+% %% Plot
+% % Primary Peak COG Map
+% figure;
+% hold on
+% title('Retracked SLA');
+% m_pcolor(Xq, Yq, sla_pp_cog_q);
+% shading flat;
+% colorbar;
+% m_grid;
+% 
+% % Primary Peak COG Map, scatter
+% figure;
+% title('Retracked, scatter');
+% m_scatter(lon, lat, 10, sla_pp_cog, 'filled');
+% colorbar;
+% m_grid;
+% 
+%% Pulse Peakniss and Max Power Class
+m_proj('Equidistant Cylindrical', 'long', LON, 'lat', LAT);
 
-freeboard = freeboardAnalysis(fluxgate);
-freeboard = thickness(freeboard, 'radar');
-normVelocities = projVelocity(fluxgate);
+ax1 = figure;
+subplot(1,2,1);
+title('Leads from Pulse Peakiness', 'FontSize', 18);
+hold on
+% m_pcolor(Xq, Yq, pP_class);
+[MAPX,~]=m_ll2xy(LON,LAT,'clip','off');
+[~,MAPY]=m_ll2xy(LON,LAT,'clip','off');
 
-[volFlow, flow] = calcVolFlow(fluxgate, freeboard, normVelocities);
-fprintf('The volumetric flow is %.2f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
+image(MAPX, MAPY, pP_class);
+shading flat;
+m_grid('xtick', 3);
+caxis([0, 1]);
+colorbar('Ticks', [0,1], 'TickLabels', {'No lead', 'Lead'})
+colormap(ax1, flipud(gray));
 
-%% Plot
-% Primary Peak COG Map
-plotSLA(Xq, Yq, sla_pp_cog_q, 'Retracked SLA');
+ax2 = subplot(1,2,2);
+title('Pulse Peakness', 'FontSize', 18);
+hold on
+m_pcolor(Xq, Yq, pPq);
+shading interp;
+m_grid('xtick', 3);
+colormap(ax2, 'default');
+cb = colorbar;
+cb.Label.String = 'Pulse peakiness';
 
-%% Pulse Peakniss
-plotLeads(Xq, Yq, pP_class);
-
+%%
+% Settings for map projection
+m_proj('Equidistant Cylindrical', 'long', [-60, 15], 'lat', [-15, 15]);
+figure;
+m_gshhs('lc', 'patch', [0.9 0.9 1], 'edgeColor', [0.3 0.3 0.3]);
+title('Area tested', 'FontSize', 18);
+bndry_lon = [LON(1), LON(2), LON(2) LON(1), LON(1)];
+bndry_lat = [LAT(1), LAT(1), LAT(2), LAT(2), LAT(1)];
+m_line(bndry_lon, bndry_lat, 'color', 'k', 'linewi', 1);
+m_hatch(bndry_lon, bndry_lat, 'single', 45, 5, 'color', [0.6 0.6 0.6]);
+m_grid;
 %% Product given SLA
-plotSLA(Xq, Yq, ssha_q, 'Product SLA');
-
-%% Ice drift
-plotIceDrift(Xq, Yq, sla_pp_cog_q, velocities);
-
-%% Flow
-plotFlow(fluxgate, flow);
-
-%% Fluxgate
-plotFluxgate(fluxgate,  freeboard);
-
-%% Fluxgate Profile
-plotFluxgateProfile(Xq, Yq, sla_pp_cog_q, fluxgate, style, cycleName);
-
-%% Area
-plotArea(LON,LAT, fluxgate);
+% figure;
+% title('Product SLA');
+% hold on
+% m_pcolor(Xq, Yq, ssha_q);
+% shading flat;
+% colorbar;
+% m_grid;
+% 
+% %% Ice drift
+% 
+% figure
+% hold on
+% m_pcolor(Xq, Yq, sla_pp_cog_q);
+% scale = 0;
+% m_quiver(velocities.lon, velocities.lat, velocities.x/100000, velocities.y/100000, scale);
+% m_quiver(4.5, 79.25, .5, 0, scale,'color', 'k');
+% m_text(6, 79.13, '50 km day^{-1}', 'FontSize', 14, 'horizontalAlignment', 'center');
+% shading flat;
+% colorbar;
+% m_grid;
+% title('Ice drift');
+% fnam = sprintf('figures/ice_drift_%s',cycleName);
+% % hgexport(gcf, fnam, style);
+% 
+% %% Track grid vs interp
+% fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
+% 
+% freeboard = freeboardAnalysis(fluxgate);
+% freeboard = thickness(freeboard, 'radar');
+% normVelocities = projVelocity(fluxgate);
+% 
+% [volFlow, flow] = calcVolFlow(fluxgate, freeboard, normVelocities);
+% fprintf('The volumetric flow is %.2f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
+% 
+% figure;
+% plot(fluxgate.profile.cumStep, flow);
+% 
+% plotFluxgate(Xq, Yq, sla_pp_cog_q, fluxgate, freeboard);
+% %%
+% plotFluxgateProfile(Xq, Yq, sla_pp_cog_q, fluxgate, style, cycleName);

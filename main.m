@@ -5,6 +5,9 @@ clc; close all; clear;
 addpath(fullfile(matlabroot, 'toolbox', 'matlab', 'm_map')); % m_maps
 addpath(genpath(fullfile(pwd,'scripts')));                   % used scripts
 altikaFiles = 'D:\Altika';                                   % data
+
+%% Cycle specific
+cryoSatFile = 'cs2awi_nh_201603.nc';
 velocityFile = 'velocity\20160303.n.S1Adrift.vector';
 cycles = 32;
 

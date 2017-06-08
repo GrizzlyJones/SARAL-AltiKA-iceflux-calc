@@ -21,7 +21,7 @@ xlim([0, dist(end)]);
 xlabel('Distance [km]');
 ylabel('Height [m]');
 title('Fluxgate SLA', 'fontSize', 18);
-legend('SLA', 'Leads', 'location', 'southeast');
+legend('Leads', 'SLA', 'location', 'southeast');
 
 subplot(2,1,2);
 hold on

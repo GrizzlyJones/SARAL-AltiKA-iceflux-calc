@@ -158,7 +158,7 @@ for i = 1:n
         [C_rtrk_ocog(j,1,i), ~,~, M_ocog(j,1,i), W_ocog(j,1,i)] = waveformAnalysis(wave(:,j,i), 'OCOG');
         [C_rtrk_pp_cog(j,1,i), pStart(j,1,i), pStop(j,1,i), M_pp_cog(j,1,i), W_pp_cog(j,1,i)] = waveformAnalysis(wave(:,j,i), 'PP_COG');
         mp(j,1,i) = maxPower(wave(:,j,i), agc(j,1,i));
-        pP(j,1,i) = pulsePeakness(wave(:,j,i), 128);
+        pP(j,1,i) = pulsePeakiness(wave(:,j,i), 128);
         wPower(:,j) = wavePower(wave(:,j,i), agc(j,1,i));
     end
 end

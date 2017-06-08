@@ -174,7 +174,7 @@ for i = 1:N
     C_rtrk_ocog(i) = waveformAnalysis(wave(:,i), 'OCOG');
     [C_rtrk_pp_cog(i), ~, ~, ~, W(i)] = waveformAnalysis(wave(:,i), 'PP_COG');
     mp(i) = maxPower(wave(:,i), agc(i));
-    pP(i) = pulsePeakness(wave(:,i), 128);
+    pP(i) = pulsePeakiness(wave(:,i), 128);
 end
 
 %% Correction application
@@ -237,7 +237,7 @@ mask = ~isnan(ssha_q);
 % colorbar;
 % m_grid;
 % 
-%% Pulse Peakniss and Max Power Class
+%% Pulse Peakiness and Max Power Class
 m_proj('Equidistant Cylindrical', 'long', LON, 'lat', LAT);
 
 ax1 = figure;
@@ -256,7 +256,7 @@ colorbar('Ticks', [0,1], 'TickLabels', {'No lead', 'Lead'})
 colormap(ax1, flipud(gray));
 
 ax2 = subplot(1,2,2);
-title('Pulse Peakness', 'FontSize', 18);
+title('Pulse Peakiness', 'FontSize', 18);
 hold on
 m_pcolor(Xq, Yq, pPq);
 shading interp;

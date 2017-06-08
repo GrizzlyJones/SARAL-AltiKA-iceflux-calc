@@ -1,4 +1,4 @@
-function PPaltika = pulsePeakness(waveform, Nright)
+function PPaltika = pulsePeakiness(waveform, Nright)
 %PULSEPEAKNESS Calculate the pulse peakness of a waveform
 %   PP = pulsePeakness(WAVEFORM, Nright) returns the pulse peakness
 %   of a waveform given Nright.

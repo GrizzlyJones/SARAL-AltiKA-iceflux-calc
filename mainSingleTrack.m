@@ -226,7 +226,7 @@ plot(wave(:,i));
 line([C_rtrk_ocog(i), C_rtrk_ocog(i)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');
 line([C_ntp, C_ntp], get(gca,'ylim'), 'color', 'g', 'linestyle', '--');
 rectangle('position', [C_rtrk_ocog(i) 0 W_ocog(i) M_ocog(i)]);
-title('OCOG');
+title('OCOG', 'fontSize', 18);
 legend('wave', 'retracked point', 'reference bin')
 
 % Waveforms PPCOG
@@ -237,7 +237,7 @@ plot(pStart(i):pStop(i), wave(pStart(i):pStop(i),i), 'color', 'r');
 line([C_rtrk_pp_cog(i), C_rtrk_pp_cog(i)], get(gca,'ylim'), 'color', 'r', 'linestyle', '--');
 line([C_ntp, C_ntp], get(gca,'ylim'), 'color', 'g', 'linestyle', '--');
 rectangle('position', [C_rtrk_pp_cog(i) 0 W_pp_cog(i) M_pp_cog(i)]);
-title('PP COG (Threshold retracker)');
+title('PP COG (Threshold retracker)', 'fontSize', 18);
 legend('wave', 'primary peak', 'retracked point', 'reference bin')
 
 %%
@@ -250,7 +250,7 @@ line([C_rtrk_pp_cog(i), C_rtrk_pp_cog(i)], get(gca,'ylim'), 'color', 'r', 'lines
 line([C_ntp, C_ntp], get(gca,'ylim'), 'color', 'g', 'linestyle', '--');
 rectangle('position', [C_rtrk_pp_cog(i) 0 W_pp_cog(i) M_pp_cog(i)], 'EdgeColor', [.25, .25, .25]);
 plot(nan, nan, 'color', [.25, .25, .25])
-title('PP COG (Threshold retracker)');
+title('PP COG (Threshold retracker)', 'fontSize', 18);
 xlabel('Bin #');
 ylabel('Count');
 legend('wave', 'primary peak', 'retracked point', 'reference bin', 'OCOG rectangle');
@@ -265,7 +265,7 @@ set(gca, 'yDir', 'normal');
 colorbar;
 xlabel('Waveform #');
 ylabel('Gate bin');
-title('Image of track waveforms');
+title('Image of track waveforms', 'fontSize', 18);
 hgexport(gcf, strcat('figures\full_spectrum_' ,cycleName), style);
 
 %%
@@ -289,13 +289,13 @@ figure;
 hold on;
 plot(wave(:,i));
 line([C_ntp, C_ntp], get(gca, 'ylim'), 'color', 'g', 'linestyle', '--');
-title('Wave');
+title('Wave', 'fontSize', 18);
 xlabel('Bin #');
 ylabel('Counts');
 set(gcf,'units','points','position',[50,250,595,420]);
-fnam = sprintf('figures\\single_wave_cycle_%s_N%f_E%f', cycleName, lat(i), lon(i));
-fnam = strrep(fnam, '.', '-');
-hgexport(gcf, fnam, style);
+% fnam = sprintf('figures\\single_wave_cycle_%s_N%f_E%f', cycleName, lat(i), lon(i));
+% fnam = strrep(fnam, '.', '-');
+% hgexport(gcf, fnam, style);
 
 %%
 if strcmp(input('Make movie (y/n)\n', 's'), 'y')

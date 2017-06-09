@@ -7,9 +7,18 @@ addpath(genpath(fullfile(pwd,'scripts')));                   % used scripts
 altikaFiles = 'E:\Altika';                                   % data
 
 %% Cycle specific
-cryoSatFile = 'cryoSat/cs2awi_nh_201610.nc';
-velocityFile = 'velocity\20161917.n.S1Adrift.vector';
+% cycles = 21;
+% cryoSatFile = 'cryoSat/cs2awi_nh_201503.nc';
+% velocityFile = 'velocity\20150212.n.S1Adrift.vector';
+% cycles = 28;
+% cryoSatFile = 'cryoSat/cs2awi_nh_201510.nc';
+% velocityFile = 'velocity\20151015.n.S1Adrift.vector';
+% cycles = 32;
+% cryoSatFile = 'cryoSat/cs2awi_nh_201603.nc';
+% velocityFile = 'velocity\20160303.n.S1Adrift.vector';
 cycles = 103;
+cryoSatFile = 'cryoSat/cs2awi_nh_201610.nc';
+velocityFile = 'velocity\20161017.n.S1Adrift.vector';
 
 %% Fram Strait
 LON = [-10, 10];
@@ -109,6 +118,9 @@ for cycle = cycles
             tmpN = length(tmpLon(filter));
             x = linspace(1,length(tmpHF(filter(1,:))), tmpN);
             
+            if(filter(1,:) < 1)
+                continue;
+            end
             % Filtration of found data, saving for later use
             lon = vertcat(lon, tmpLon(filter));
             lat = vertcat(lat, tmpLat(filter));
@@ -225,48 +237,48 @@ mP_class(mPq >= 70) = 4;
 mask = ~isnan(ssha_q);
 
 %% Track grid vs interp
-freeboard_cryo = cryoSat(cryoSatFile, 'sea_ice_freeboard', fluxgate, LON, LAT, Xq, Yq);
-thickness_cryo = cryoSat(cryoSatFile, 'sea_ice_thickness', fluxgate, LON, LAT, Xq, Yq);
-
-fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
-
-iceSheet = freeboardAnalysis(fluxgate);
-iceSheet = thickness(iceSheet, 'radar');
-normVelocities = projVelocity(fluxgate);
-
-h_f = flattenIcesheet(fluxgate, iceSheet, 'freeboard');
-h_i = flattenIcesheet(fluxgate, iceSheet, 'iceThickness');
-
-[volFlow, flow] = calcVolFlow(fluxgate, h_i, normVelocities);
-cryoFlow = calcVolFlow(fluxgate, thickness_cryo, normVelocities);
-fprintf('SARAL/AltiKa: \t%3.3f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
-fprintf('CryoSat 2: \t\t%3.3f cubic kilometers per day (positive is northen flow)\n', cryoFlow*1e-9);
+% freeboard_cryo = cryoSat(cryoSatFile, 'sea_ice_freeboard', fluxgate, LON, LAT, Xq, Yq);
+% thickness_cryo = cryoSat(cryoSatFile, 'sea_ice_thickness', fluxgate, LON, LAT, Xq, Yq);
+% 
+% fluxgate = interpProfile(fluxgate, Xq, Yq, sla_pp_cog_q, ssha_q, pPq, Wq, gridVelocity);
+% 
+% iceSheet = freeboardAnalysis(fluxgate);
+% iceSheet = thickness(iceSheet, 'radar');
+% normVelocities = projVelocity(fluxgate);
+% 
+% h_f = flattenIcesheet(fluxgate, iceSheet, 'freeboard');
+% h_i = flattenIcesheet(fluxgate, iceSheet, 'iceThickness');
+% 
+% [volFlow, flow] = calcVolFlow(fluxgate, h_i, normVelocities);
+% cryoFlow = calcVolFlow(fluxgate, thickness_cryo, normVelocities);
+% fprintf('SARAL/AltiKa: \t%3.3f cubic kilometers per day (positive is northen flow)\n', volFlow*1e-9);
+% fprintf('CryoSat 2: \t\t%3.3f cubic kilometers per day (positive is northen flow)\n', cryoFlow*1e-9);
 
 %% Plot
 % Primary Peak COG Map
 plotSLA(Xq, Yq, sla_pp_cog_q, 'Retracked SLA');
-
-%% Pulse Peakniss
-plotLeads(Xq, Yq, pP_class);
-
-%% Product given SLA
-plotSLA(Xq, Yq, ssha_q, 'Product SLA');
-
-%% Ice drift
-plotIceDrift(Xq, Yq, sla_pp_cog_q, velocities);
-
-%% Flow
-plotFlow(fluxgate, flow);
-
-%% Fluxgate
-plotFluxgate(fluxgate,  iceSheet);
-
-%% Fluxgate Profile
-plotFluxgateProfile(Xq, Yq, sla_pp_cog_q, fluxgate);
-
-%% Area
-plotArea(LON,LAT, fluxgate);
-
-%% CryoSat
-plotCryoSat(fluxgate, h_f, freeboard_cryo, 'Freeboard');
-plotCryoSat(fluxgate, h_f, thickness_cryo, 'Thickness');
+% 
+% %% Pulse Peakniss
+% plotLeads(Xq, Yq, pP_class);
+% 
+% %% Product given SLA
+% plotSLA(Xq, Yq, ssha_q, 'Product SLA');
+% 
+% %% Ice drift
+% plotIceDrift(Xq, Yq, sla_pp_cog_q, velocities);
+% 
+% %% Flow
+% plotFlow(fluxgate, flow);
+% 
+% %% Fluxgate
+% plotFluxgate(fluxgate,  iceSheet);
+% 
+% %% Fluxgate Profile
+% plotFluxgateProfile(Xq, Yq, sla_pp_cog_q, fluxgate);
+% 
+% %% Area
+% plotArea(LON,LAT, fluxgate);
+% 
+% %% CryoSat
+% plotCryoSat(fluxgate, h_f, freeboard_cryo, 'Freeboard');
+% plotCryoSat(fluxgate, h_i, thickness_cryo, 'Thickness');

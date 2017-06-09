@@ -5,6 +5,7 @@ figure;
 m_pcolor(Xq, Yq, ssha_q);
 cb = colorbar;
 cb.Label.String = 'Height [m]';
+caxis([-5 5]);
 shading flat;
 m_grid;
 title(title_, 'fontSize', 18);

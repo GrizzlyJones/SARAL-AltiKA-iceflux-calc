@@ -242,7 +242,7 @@ m_proj('Equidistant Cylindrical', 'long', LON, 'lat', LAT);
 
 ax1 = figure;
 subplot(1,2,1);
-title('Leads from Pulse Peakiness', 'FontSize', 18);
+title('Leads', 'FontSize', 18);
 hold on
 % m_pcolor(Xq, Yq, pP_class);
 [MAPX,~]=m_ll2xy(LON,LAT,'clip','off');
@@ -266,16 +266,16 @@ cb = colorbar;
 cb.Label.String = 'Pulse peakiness';
 
 %%
-% Settings for map projection
-m_proj('Equidistant Cylindrical', 'long', [-60, 15], 'lat', [-15, 15]);
-figure;
-m_gshhs('lc', 'patch', [0.9 0.9 1], 'edgeColor', [0.3 0.3 0.3]);
-title('Area tested', 'FontSize', 18);
-bndry_lon = [LON(1), LON(2), LON(2) LON(1), LON(1)];
-bndry_lat = [LAT(1), LAT(1), LAT(2), LAT(2), LAT(1)];
-m_line(bndry_lon, bndry_lat, 'color', 'k', 'linewi', 1);
-m_hatch(bndry_lon, bndry_lat, 'single', 45, 5, 'color', [0.6 0.6 0.6]);
-m_grid;
+% % Settings for map projection
+% m_proj('Equidistant Cylindrical', 'long', [-60, 15], 'lat', [-15, 15]);
+% figure;
+% m_gshhs('lc', 'patch', [0.9 0.9 1], 'edgeColor', [0.3 0.3 0.3]);
+% title('Area tested', 'FontSize', 18);
+% bndry_lon = [LON(1), LON(2), LON(2) LON(1), LON(1)];
+% bndry_lat = [LAT(1), LAT(1), LAT(2), LAT(2), LAT(1)];
+% m_line(bndry_lon, bndry_lat, 'color', 'k', 'linewi', 1);
+% m_hatch(bndry_lon, bndry_lat, 'single', 45, 5, 'color', [0.6 0.6 0.6]);
+% m_grid;
 %% Product given SLA
 % figure;
 % title('Product SLA');

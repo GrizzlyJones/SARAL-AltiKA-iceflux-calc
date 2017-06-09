@@ -10,6 +10,10 @@ function [ velocities ] = velocity( fileName, LON, LAT )
 %
 %   See also GRIDVELOCITIES
 
+if exist(fileName, 'file') == 0
+    error('Error. \n%s could not be found.', fileName);
+end
+
 %% Init. velocity struct
 velocities = struct('lon', [], 'lat', [], 'x', [], 'y', [], 'magn', [], 'brng' ,[]);
 
